@@ -20,20 +20,16 @@ def git_commands(comment):
         git_add_cmd, git_commit_cmd, git_pull, git_push_cmd
     )
     returncode, stdout, stderr = execute_command(combined_cmd)
-    print(stdout)
+    print(stdout, stderr)
 
 
 def npm_build(comment):
     print("Adding changes to the gh-pages branch")
-    git_pull = "git pull origin gh-pages"
     npm_cmd = "npm run build"
-    git_add_cmd = "git add dist -f"
-    git_commit_cmd = 'git commit -m "{}"'.format(comment)
+    git_delete = "git push --delete origin gh-pages"
     git_push_cmd = "git subtree push --prefix dist origin gh-pages "
 
-    combined_cmd = "{} && {} && {} && {} && {}".format(
-        npm_cmd, git_add_cmd, git_commit_cmd, git_pull, git_push_cmd
-    )
+    combined_cmd = "{} && {} && {}".format(npm_cmd, git_delete, git_push_cmd)
     returncode, stdout, stderr = execute_command(combined_cmd)
     print(stdout, returncode)
 
