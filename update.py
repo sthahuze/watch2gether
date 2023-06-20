@@ -14,7 +14,7 @@ def git_commands(comment):
     git_pull = "git pull origin main"
     git_add_cmd = "git add *"
     git_commit_cmd = 'git commit -m "{}"'.format(comment)
-    git_push_cmd = "git push origin main"
+    git_push_cmd = "git push -f origin main"
 
     combined_cmd = "{} && {} && {} && {}".format(
         git_add_cmd, git_commit_cmd, git_pull, git_push_cmd
@@ -29,7 +29,7 @@ def npm_build(comment):
     npm_cmd = "npm run build"
     git_add_cmd = "git add dist -f"
     git_commit_cmd = 'git commit -m "{}"'.format(comment)
-    git_push_cmd = "git push origin gh-pages"
+    git_push_cmd = "git subtree push --prefix dist origin gh-pages "
 
     combined_cmd = "{} && {} && {} && {} && {}".format(
         npm_cmd, git_add_cmd, git_commit_cmd, git_pull, git_push_cmd

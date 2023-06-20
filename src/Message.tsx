@@ -1,5 +1,5 @@
 function Message() {
-    const name = "not traviTraviiiiiiiiiiiiiiiiiiss";
+    const name = "Anya";
     return <h1>Hello, this is {name}</h1>;
   }
   
