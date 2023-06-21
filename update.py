@@ -14,7 +14,7 @@ def git_commands(comment):
     git_pull = "git pull origin main"
     git_add_cmd = "git add *"
     git_commit_cmd = 'git commit -m "{}"'.format(comment)
-    git_push_cmd = "git push -f origin main"
+    git_push_cmd = "git push origin main"
 
     combined_cmd = "{} && {} && {} && {}".format(
         git_add_cmd, git_commit_cmd, git_pull, git_push_cmd
@@ -42,4 +42,4 @@ comment = input("Enter your Git comment:: ")
 
 git_commands(comment)
 
-npm_build(comment)
+npm_build()
