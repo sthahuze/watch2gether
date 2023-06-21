@@ -23,7 +23,7 @@ def git_commands(comment):
     print(stdout, stderr)
 
 
-def npm_build(comment):
+def npm_build():
     print("Adding changes to the gh-pages branch")
     npm_cmd = "npm run build"
     git_add = "git add dist -f"
@@ -35,7 +35,7 @@ def npm_build(comment):
         npm_cmd, git_add, git_commit, git_delete, git_push_cmd
     )
     returncode, stdout, stderr = execute_command(combined_cmd)
-    print(stdout, returncode)
+    print(stdout, stderr)
 
 
 comment = input("Enter your Git comment:: ")
