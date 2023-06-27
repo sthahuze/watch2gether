@@ -1,7 +1,15 @@
 import Message from "./Message";
+import Header from "./header";
 
 function App() {
-  return <h1><Message/></h1>;
+  return (
+      <div>
+        <Header/>
+        <Message/>
+
+      </div>
+  );
 }
+ 
 
 export default App;
