@@ -16,12 +16,12 @@ function App() {
     <Stack>
       <NavBar />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<LogInForm />} />
-        <Route path="/room_entrance" element={<RoomEntrance />} />
-        <Route path="/room/:roomid" element={<Room />} />
-        <Route path="/error" element={<NotFound />} />
-        <Route path="/*" element={<NotFound />} />
+        <Route path="watch2gether/" element={<Home />} />
+        <Route path="watch2gether/login" element={<LogInForm />} />
+        <Route path="watch2gether/room_entrance" element={<RoomEntrance />} />
+        <Route path="watch2gether/room/:roomid" element={<Room />} />
+        <Route path="watch2gether/error" element={<NotFound />} />
+        <Route path="watch2gether/*" element={<NotFound />} />
       </Routes>
       <Footer />
     </Stack>
