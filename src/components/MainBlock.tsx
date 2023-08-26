@@ -7,7 +7,7 @@ function MainBlock() {
   const navigate = useNavigate();
   const handleCreateRoom = () => {
     const roomid = CreateNewRoom(); // Виклик функції CreateNewRoom
-    if (roomid == "") {
+    if (roomid === "") {
       navigate(`/login`);
     } else {
       navigate(`/room/${roomid}`);

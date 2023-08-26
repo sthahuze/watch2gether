@@ -19,7 +19,7 @@ function Navigation() {
 
   const handleCreateRoom = () => {
     const username = localStorage.getItem("username");
-    if (username == "") {
+    if (username === "") {
       navigate(`/login`);
     } else {
       const roomid = CreateNewRoom();
@@ -29,7 +29,7 @@ function Navigation() {
 
   const handleEnterTheRoom = () => {
     const username = localStorage.getItem("username"); // Виклик функції CreateNewRoom
-    if (username == "") {
+    if (username === "") {
       navigate(`/login`);
     } else {
       navigate("/room_entrance");
