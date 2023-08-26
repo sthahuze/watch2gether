@@ -1,5 +1,5 @@
 import NavBar from "./components/NavBar";
-import { Routes, Route } from "react-router-dom";
+import { BrowserRouter, Route } from "react-router-dom";
 import Footer from "./components/Footer";
 //import LogInForm from "./components/LogInForm";
 import Stack from "react-bootstrap/Stack";
@@ -15,14 +15,14 @@ function App() {
   return (
     <Stack>
       <NavBar />
-      <Routes>
-        <Route path="watch2gether/" element={<Home />} />
-        <Route path="watch2gether/login" element={<LogInForm />} />
-        <Route path="watch2gether/room_entrance" element={<RoomEntrance />} />
-        <Route path="watch2gether/room/:roomid" element={<Room />} />
-        <Route path="watch2gether/error" element={<NotFound />} />
-        <Route path="watch2gether/*" element={<NotFound />} />
-      </Routes>
+      <BrowserRouter basename="/watch2gether">
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<LogInForm />} />
+        <Route path="/room_entrance" element={<RoomEntrance />} />
+        <Route path="/room/:roomid" element={<Room />} />
+        <Route path="/error" element={<NotFound />} />
+        <Route path="/*" element={<NotFound />} />
+      </BrowserRouter>
       <Footer />
     </Stack>
   );
