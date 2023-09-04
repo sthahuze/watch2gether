@@ -11,14 +11,12 @@ def execute_command(command):
 
 def git_commands(comment):
     print("Adding changes to the main branch")
-    git_pull = "git pull origin main"
+    # git_pull = "git pull origin main"
     git_add_cmd = "git add *"
     git_commit_cmd = 'git commit -m "{}"'.format(comment)
     git_push_cmd = "git push origin main"
 
-    combined_cmd = "{} && {} && {} && {}".format(
-        git_add_cmd, git_commit_cmd, git_pull, git_push_cmd
-    )
+    combined_cmd = "{} && {} && {}".format(git_add_cmd, git_commit_cmd, git_push_cmd)
     returncode, stdout, stderr = execute_command(combined_cmd)
     print(stdout, stderr)
 
