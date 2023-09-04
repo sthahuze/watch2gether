@@ -2,23 +2,65 @@ import { useState, ChangeEvent, FormEvent } from "react";
 import background from "../components/image/jvleergjp-rbvdis.jpg";
 import { Container, Button, Modal, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-//server connection needed?
+//const server = "https://safe-grove-blarney.glitch.me";
 
 function LogInForm() {
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
 
+  //треба щоб якщо виникає помилка, то виводилось повідомлення error
   const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    axios
+      .post("https://safe-grove-blarney.glitch.me/users", { name: "Halya" })
+      .then((response) => {
+        // handle success
+        //  console.log(response.status);
 
-    // Збереження імені користувача у локальному сховищі
-    localStorage.setItem("username", username);
-    setUsername("");
-    //go bakck
-    navigate("/");
+        // Save name in Browser
+        localStorage.setItem("username", username);
+        // Save userID in Browser
+        localStorage.setItem("userID", response.data.id);
+        setUsername("");
+        //go bakck
+        navigate("/");
+      })
+      .catch((error) => {
+        if (error.response) {
+          // Якщо є відповідь від сервера, отримайте статус з неї
+          console.log(error.response.status);
+          toast.error("Error " + error.response.status, {
+            position: "top-right",
+            autoClose: 1500,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            progress: undefined,
+            theme: "colored",
+          });
+        } else {
+          // Якщо помилка виникла під час відправки запиту
+          console.log(error.message);
+          toast.error(error.message, {
+            position: "top-right",
+            autoClose: 1500,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            progress: undefined,
+            theme: "colored",
+          });
+        }
+      });
   };
 
+  //???
   const handleUsernameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
   };
@@ -59,6 +101,7 @@ function LogInForm() {
           </Modal.Body>
         </Modal.Dialog>
       </div>
+      <ToastContainer />
     </Container>
   );
 }
