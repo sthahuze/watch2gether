@@ -6,33 +6,40 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-//const server = "https://safe-grove-blarney.glitch.me";
+const server = "https://deep-important-gull.glitch.me";
 
 function LogInForm() {
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
 
-  //треба щоб якщо виникає помилка, то виводилось повідомлення error
+  //Function that performs log in
   const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    // handle success
     axios
-      .post("https://safe-grove-blarney.glitch.me/users", { name: "Halya" })
+      .post(`${server}/users`, { name: username })
       .then((response) => {
-        // handle success
-        //  console.log(response.status);
-
         // Save name in Browser
         localStorage.setItem("username", username);
         // Save userID in Browser
         localStorage.setItem("userID", response.data.id);
         setUsername("");
-        //go bakck
+        //go back
+        toast.success("You successfully logged in", {
+          position: "top-right",
+          autoClose: 1500,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+          theme: "colored",
+        });
         navigate("/");
       })
       .catch((error) => {
         if (error.response) {
-          // Якщо є відповідь від сервера, отримайте статус з неї
-          console.log(error.response.status);
+          // Error from server
           toast.error("Error " + error.response.status, {
             position: "top-right",
             autoClose: 1500,
@@ -44,8 +51,7 @@ function LogInForm() {
             theme: "colored",
           });
         } else {
-          // Якщо помилка виникла під час відправки запиту
-          console.log(error.message);
+          // Another error
           toast.error(error.message, {
             position: "top-right",
             autoClose: 1500,
@@ -60,7 +66,7 @@ function LogInForm() {
       });
   };
 
-  //???
+  //Change username in field
   const handleUsernameChange = (event: ChangeEvent<HTMLInputElement>) => {
     setUsername(event.target.value);
   };

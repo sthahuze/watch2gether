@@ -1,16 +1,94 @@
 import background from "./image/jvleergjp-rbvdis.jpg";
 import { Col, Button, Container, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import CreateNewRoom from "../pages/CreateRoom";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const server = "https://deep-important-gull.glitch.me";
 
 function MainBlock() {
   const navigate = useNavigate();
   const handleCreateRoom = () => {
-    const roomid = CreateNewRoom(); // Виклик функції CreateNewRoom
-    if (roomid === "") {
+    const username = localStorage.getItem("username");
+    const userID = localStorage.getItem("userID");
+    if (username === "") {
       navigate(`/login`);
     } else {
-      navigate(`/room/${roomid}`);
+      axios
+        .post(`${server}/rooms/`)
+        .then((response) => {
+          if (response.status === 201) {
+            const roomid = response.data.name;
+            localStorage.setItem("roomid", roomid);
+
+            axios
+              .put(`${server}/rooms/${roomid}/users`, { user: userID })
+              .then((response) => {
+                if (response.status === 200) {
+                  toast.success("You successfully entered the Room", {
+                    position: "top-right",
+                    autoClose: 1500,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: false,
+                    progress: undefined,
+                    theme: "colored",
+                  });
+                } else {
+                  toast.error("Error " + response.status, {
+                    position: "top-right",
+                    autoClose: 1500,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: false,
+                    progress: undefined,
+                    theme: "colored",
+                  });
+                }
+              })
+              .catch((error) => {
+                toast.error("Error " + error.message, {
+                  position: "top-right",
+                  autoClose: 1500,
+                  hideProgressBar: true,
+                  closeOnClick: true,
+                  pauseOnHover: false,
+                  draggable: false,
+                  progress: undefined,
+                  theme: "colored",
+                });
+              });
+
+            navigate(`/room/${roomid}`);
+          } else {
+            //error pop up response.status
+            toast.error("Error " + response.status, {
+              position: "top-right",
+              autoClose: 1500,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: false,
+              draggable: false,
+              progress: undefined,
+              theme: "colored",
+            });
+          }
+        })
+        .catch((error) => {
+          toast.error("Error " + error.message, {
+            position: "top-right",
+            autoClose: 1500,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            progress: undefined,
+            theme: "colored",
+          });
+        });
     }
   };
 
@@ -40,6 +118,7 @@ function MainBlock() {
           </div>
         </Col>
       </Row>
+      <ToastContainer />
     </Container>
   );
 }

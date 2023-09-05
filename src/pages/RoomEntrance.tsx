@@ -1,7 +1,12 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import background from "../components/image/jvleergjp-rbvdis.jpg";
+import axios from "axios";
 import { Container, Button, Modal, Form } from "react-bootstrap";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const server = "https://deep-important-gull.glitch.me";
 
 function RoomEntrance() {
   const [roomid, setRoomID] = useState("");
@@ -11,38 +16,55 @@ function RoomEntrance() {
     setRoomID(event.target.value);
   };
 
-  const handleSubmit = useCallback(
-    (event: any) => {
-      event.preventDefault();
-      //server connection needed
-      //socket.emit("room_existance_check", roomid);
-    },
-    [roomid]
-  );
+  const handleSubmit = () => {
+    const username = localStorage.getItem("username");
+    const userID = localStorage.getItem("userID");
+    if (username === "") {
+      navigate(`/login`);
+    } else {
+      axios
+        .put(`${server}/rooms/${roomid}/users`, { user: userID })
+        .then((response) => {
+          if (response.status === 200) {
+            toast.success("You successfully entered the Room", {
+              position: "top-right",
+              autoClose: 1500,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: false,
+              draggable: false,
+              progress: undefined,
+              theme: "colored",
+            });
+          } else {
+            toast.error("Error " + response.status, {
+              position: "top-right",
+              autoClose: 1500,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: false,
+              draggable: false,
+              progress: undefined,
+              theme: "colored",
+            });
+          }
+        })
+        .catch((error) => {
+          toast.error("Error " + error.message, {
+            position: "top-right",
+            autoClose: 1500,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            progress: undefined,
+            theme: "colored",
+          });
+        });
 
-  const handleRoomExistanceCheck = useCallback(
-    (exists: any) => {
-      if (exists === 1) {
-        //server connection needed
-        //socket.emit("join_room", roomid);
-        localStorage.setItem("roomid", roomid);
-        navigate(`/room/${roomid}`);
-      } else {
-        alert("Room does not exist");
-      }
-    },
-    [roomid, navigate]
-  );
-
-  useEffect(() => {
-    //server connection needed
-    //socket.on("room_existance_check", handleRoomExistanceCheck);
-
-    return () => {
-      //server connection needed
-      //socket.off("room_existance_check", handleRoomExistanceCheck);
-    };
-  }, [handleRoomExistanceCheck]);
+      navigate(`/room/${roomid}`);
+    }
+  };
 
   return (
     <Container
@@ -79,6 +101,7 @@ function RoomEntrance() {
           </Modal.Body>
         </Modal.Dialog>
       </div>
+      <ToastContainer />
     </Container>
   );
 }

@@ -1,6 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
 import { Container, Nav, Navbar, Dropdown } from "react-bootstrap";
-import CreateNewRoom from "../pages/CreateRoom";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const server = "https://deep-important-gull.glitch.me";
 
 function useAuth() {
   const username = localStorage.getItem("username");
@@ -13,17 +17,139 @@ function Navigation() {
   const { isAuthenticated, username } = useAuth();
 
   const handleLogout = () => {
+    //delete username from browser
     localStorage.setItem("username", "");
+    const userIdToDelete = localStorage.getItem("userID");
+    //delete userID from browser
+    localStorage.setItem("userID", "");
+    //send HttpDelete request to server
+    axios
+      .delete(`${server}/users/${userIdToDelete}`)
+      .then((response) => {
+        if (response.status === 201) {
+          console.log("User was successfully deleted");
+          //pop up
+          toast.success("User was successfully logged out", {
+            position: "top-right",
+            autoClose: 1500,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            progress: undefined,
+            theme: "colored",
+          });
+        } else {
+          console.error("Error when deleting user", response.status);
+          //pop up server error
+          toast.error("Error when deleting user", {
+            position: "top-right",
+            autoClose: 1500,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            progress: undefined,
+            theme: "colored",
+          });
+        }
+      })
+      .catch((error) => {
+        //pop up another error
+        toast.error("Error when deleting user" + error.message, {
+          position: "top-right",
+          autoClose: 1500,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+          theme: "colored",
+        });
+      });
     navigate("/");
   };
 
   const handleCreateRoom = () => {
     const username = localStorage.getItem("username");
+    const userID = localStorage.getItem("userID");
     if (username === "") {
       navigate(`/login`);
     } else {
-      const roomid = CreateNewRoom();
-      navigate(`/room/${roomid}`);
+      axios
+        .post(`${server}/rooms/`)
+        .then((response) => {
+          if (response.status === 201) {
+            const roomid = response.data.name;
+            localStorage.setItem("roomid", roomid);
+
+            axios
+              .put(`${server}/rooms/${roomid}/users`, { user: userID })
+              .then((response) => {
+                if (response.status === 200) {
+                  toast.success("You successfully entered the Room", {
+                    position: "top-right",
+                    autoClose: 1500,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: false,
+                    progress: undefined,
+                    theme: "colored",
+                  });
+                } else {
+                  toast.error("Error " + response.status, {
+                    position: "top-right",
+                    autoClose: 1500,
+                    hideProgressBar: true,
+                    closeOnClick: true,
+                    pauseOnHover: false,
+                    draggable: false,
+                    progress: undefined,
+                    theme: "colored",
+                  });
+                }
+              })
+              .catch((error) => {
+                toast.error("Error " + error.message, {
+                  position: "top-right",
+                  autoClose: 1500,
+                  hideProgressBar: true,
+                  closeOnClick: true,
+                  pauseOnHover: false,
+                  draggable: false,
+                  progress: undefined,
+                  theme: "colored",
+                });
+              });
+
+            navigate(`/room/${roomid}`);
+          } else {
+            //error pop up response.status
+            toast.error("Error " + response.status, {
+              position: "top-right",
+              autoClose: 1500,
+              hideProgressBar: true,
+              closeOnClick: true,
+              pauseOnHover: false,
+              draggable: false,
+              progress: undefined,
+              theme: "colored",
+            });
+          }
+        })
+        .catch((error) => {
+          toast.error("Error " + error.message, {
+            position: "top-right",
+            autoClose: 1500,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: false,
+            progress: undefined,
+            theme: "colored",
+          });
+        });
     }
   };
 
@@ -56,6 +182,9 @@ function Navigation() {
                   {username}
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
+                  <Dropdown.Item>
+                    UserID {localStorage.getItem("userID")}
+                  </Dropdown.Item>
                   <Dropdown.Item onClick={handleLogout}>Log out</Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
@@ -69,6 +198,7 @@ function Navigation() {
           </Nav>
         </Navbar.Collapse>
       </Container>
+      <ToastContainer />
     </Navbar>
   );
 }
