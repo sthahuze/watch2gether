@@ -37,7 +37,7 @@ function RoomList() {
   return (
     <div>
       <Container className="pt-4 pb-4">
-        <h4 className="text-center pb-2">List of open rooms</h4>
+        <h1 className="text-center pb-2">List of open rooms</h1>
         <ListGroup>
           {list.map((item, index) => (
             <ListGroup.Item key={index}>{item}</ListGroup.Item>
