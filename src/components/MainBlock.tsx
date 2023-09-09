@@ -5,7 +5,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const server = "https://deep-important-gull.glitch.me";
+const server = "https://gruppe9.toni-barth.com";
 
 function MainBlock() {
   const navigate = useNavigate();
