@@ -35,15 +35,8 @@ function RoomList() {
   const containerHeight = isSmallScreen ? 260 : 580;
 
   return (
-    <div
-      style={{
-        height: `${containerHeight}px`,
-        background: "lightgray",
-        overflowY: "scroll",
-      }}
-      className="mb-5"
-    >
-      <Container className="pr-4 pl-4 pt-3 pb-3">
+    <div>
+      <Container className="pt-4 pb-4">
         <h4 className="text-center pb-2">List of open rooms</h4>
         <ListGroup>
           {list.map((item, index) => (
