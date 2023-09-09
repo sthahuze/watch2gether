@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import background from "../components/image/jvleergjp-rbvdis.jpg";
 import axios from "axios";
@@ -8,62 +8,58 @@ import "react-toastify/dist/ReactToastify.css";
 
 const server = "https://gruppe9.toni-barth.com";
 
+function success_pop_up(message: any) {
+  toast.success(message, {
+    position: "top-right",
+    autoClose: 1500,
+    hideProgressBar: true,
+    closeOnClick: true,
+    pauseOnHover: false,
+    draggable: false,
+    progress: undefined,
+    theme: "colored",
+  });
+}
+
+function error_pop_up(message: any) {
+  toast.error(message, {
+    position: "top-right",
+    autoClose: 1500,
+    hideProgressBar: true,
+    closeOnClick: true,
+    pauseOnHover: false,
+    draggable: false,
+    progress: undefined,
+    theme: "colored",
+  });
+}
+
 function RoomEntrance() {
   const [roomid, setRoomID] = useState("");
   const navigate = useNavigate();
 
-  const handleRoomIDChange = (event: any) => {
+  const handleRoomIDChange = (event: ChangeEvent<HTMLInputElement>) => {
     setRoomID(event.target.value);
   };
 
-  const handleSubmit = () => {
-    const username = localStorage.getItem("username");
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
     const userID = localStorage.getItem("userID");
-    if (username === "") {
-      navigate(`/login`);
-    } else {
-      axios
-        .put(`${server}/rooms/${roomid}/users`, { user: userID })
-        .then((response) => {
-          if (response.status === 200) {
-            toast.success("You successfully entered the Room", {
-              position: "top-right",
-              autoClose: 1500,
-              hideProgressBar: true,
-              closeOnClick: true,
-              pauseOnHover: false,
-              draggable: false,
-              progress: undefined,
-              theme: "colored",
-            });
-          } else {
-            toast.error("Error " + response.status, {
-              position: "top-right",
-              autoClose: 1500,
-              hideProgressBar: true,
-              closeOnClick: true,
-              pauseOnHover: false,
-              draggable: false,
-              progress: undefined,
-              theme: "colored",
-            });
-          }
-        })
-        .catch((error) => {
-          toast.error("Error " + error.message, {
-            position: "top-right",
-            autoClose: 1500,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: false,
-            progress: undefined,
-            theme: "colored",
-          });
-        });
 
-      navigate(`/room/${roomid}`);
-    }
+    axios
+      .put(`${server}/rooms/${roomid}/users`, { user: userID })
+      .then((response) => {
+        if (response.status === 200) {
+          success_pop_up("You successfully entered the Room");
+          localStorage.setItem("roomid", roomid);
+          navigate(`/room/${roomid}`);
+        } else {
+          error_pop_up("Error " + response.status);
+        }
+      })
+      .catch((error) => {
+        error_pop_up("Error " + error.message);
+      });
   };
 
   return (
@@ -100,8 +96,8 @@ function RoomEntrance() {
             </Form>
           </Modal.Body>
         </Modal.Dialog>
+        <ToastContainer />
       </div>
-      <ToastContainer />
     </Container>
   );
 }

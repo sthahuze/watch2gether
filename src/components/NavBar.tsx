@@ -6,6 +6,32 @@ import "react-toastify/dist/ReactToastify.css";
 
 const server = "https://gruppe9.toni-barth.com";
 
+function success_pop_up(message: any) {
+  toast.success(message, {
+    position: "top-right",
+    autoClose: 1500,
+    hideProgressBar: true,
+    closeOnClick: true,
+    pauseOnHover: false,
+    draggable: false,
+    progress: undefined,
+    theme: "colored",
+  });
+}
+
+function error_pop_up(message: any) {
+  toast.error(message, {
+    position: "top-right",
+    autoClose: 1500,
+    hideProgressBar: true,
+    closeOnClick: true,
+    pauseOnHover: false,
+    draggable: false,
+    progress: undefined,
+    theme: "colored",
+  });
+}
+
 function useAuth() {
   const username = localStorage.getItem("username");
   const isAuthenticated = !!localStorage.getItem("username");
@@ -29,43 +55,16 @@ function Navigation() {
         if (response.status === 200) {
           console.log("User was successfully deleted");
           //pop up
-          toast.success("User was successfully logged out", {
-            position: "top-right",
-            autoClose: 1500,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: false,
-            progress: undefined,
-            theme: "colored",
-          });
+          success_pop_up("User was successfully logged out");
         } else {
           console.error("Error when deleting user", response.status);
           //pop up server error
-          toast.error("Error when deleting user", {
-            position: "top-right",
-            autoClose: 1500,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: false,
-            progress: undefined,
-            theme: "colored",
-          });
+          error_pop_up("Error when deleting user::" + response.status);
         }
       })
       .catch((error) => {
         //pop up another error
-        toast.error("Error when deleting user" + error.message, {
-          position: "top-right",
-          autoClose: 1500,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-          theme: "colored",
-        });
+        error_pop_up("Error when deleting user" + error.message);
       });
     navigate("/");
   };
@@ -87,68 +86,22 @@ function Navigation() {
               .put(`${server}/rooms/${roomid}/users`, { user: userID })
               .then((response) => {
                 if (response.status === 200) {
-                  toast.success("You successfully entered the Room", {
-                    position: "top-right",
-                    autoClose: 1500,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                    draggable: false,
-                    progress: undefined,
-                    theme: "colored",
-                  });
+                  success_pop_up("You successfully entered the Room");
+                  navigate(`/room/${roomid}`);
                 } else {
-                  toast.error("Error " + response.status, {
-                    position: "top-right",
-                    autoClose: 1500,
-                    hideProgressBar: true,
-                    closeOnClick: true,
-                    pauseOnHover: false,
-                    draggable: false,
-                    progress: undefined,
-                    theme: "colored",
-                  });
+                  error_pop_up("Error " + response.status);
                 }
               })
               .catch((error) => {
-                toast.error("Error " + error.message, {
-                  position: "top-right",
-                  autoClose: 1500,
-                  hideProgressBar: true,
-                  closeOnClick: true,
-                  pauseOnHover: false,
-                  draggable: false,
-                  progress: undefined,
-                  theme: "colored",
-                });
+                error_pop_up("Error " + error.message);
               });
-
-            navigate(`/room/${roomid}`);
           } else {
             //error pop up response.status
-            toast.error("Error " + response.status, {
-              position: "top-right",
-              autoClose: 1500,
-              hideProgressBar: true,
-              closeOnClick: true,
-              pauseOnHover: false,
-              draggable: false,
-              progress: undefined,
-              theme: "colored",
-            });
+            error_pop_up("Error " + response.status);
           }
         })
         .catch((error) => {
-          toast.error("Error " + error.message, {
-            position: "top-right",
-            autoClose: 1500,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: false,
-            progress: undefined,
-            theme: "colored",
-          });
+          error_pop_up("Error " + error.message);
         });
     }
   };
@@ -207,6 +160,3 @@ function Navigation() {
 }
 
 export default Navigation;
-/*<Nav.Link as={Link} to="/signup">
-      Sign up
-    </Nav.Link>*/

@@ -8,6 +8,32 @@ import "react-toastify/dist/ReactToastify.css";
 
 const server = "https://gruppe9.toni-barth.com";
 
+function success_pop_up(message: any) {
+  toast.success(message, {
+    position: "top-right",
+    autoClose: 1500,
+    hideProgressBar: true,
+    closeOnClick: true,
+    pauseOnHover: false,
+    draggable: false,
+    progress: undefined,
+    theme: "colored",
+  });
+}
+
+function error_pop_up(message: any) {
+  toast.error(message, {
+    position: "top-right",
+    autoClose: 1500,
+    hideProgressBar: true,
+    closeOnClick: true,
+    pauseOnHover: false,
+    draggable: false,
+    progress: undefined,
+    theme: "colored",
+  });
+}
+
 function LogInForm() {
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
@@ -25,43 +51,16 @@ function LogInForm() {
         localStorage.setItem("userID", response.data.id);
         setUsername("");
         //go back
-        toast.success("You successfully logged in", {
-          position: "top-right",
-          autoClose: 1500,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-          theme: "colored",
-        });
+        success_pop_up("You successfully logged in");
         navigate("/");
       })
       .catch((error) => {
         if (error.response) {
           // Error from server
-          toast.error("Error " + error.response.status, {
-            position: "top-right",
-            autoClose: 1500,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: false,
-            progress: undefined,
-            theme: "colored",
-          });
+          error_pop_up("Error " + error.response.status);
         } else {
           // Another error
-          toast.error(error.message, {
-            position: "top-right",
-            autoClose: 1500,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: false,
-            progress: undefined,
-            theme: "colored",
-          });
+          error_pop_up(error.message);
         }
       });
   };

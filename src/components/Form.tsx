@@ -1,12 +1,28 @@
 import { useState } from "react";
+import axios from "axios";
+
+const server = "https://gruppe9.toni-barth.com";
 
 export const CustomForm = ({ setYoutubeLink }: any) => {
   const [input, setInput] = useState("");
+  const roomid = localStorage.getItem("roomid");
+  const userID = localStorage.getItem("userID");
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
     setYoutubeLink(input);
-    //empty
+    axios
+      .put(`${server}/rooms/${roomid}/video`, { user: userID, url: input })
+      .then((response) => {
+        if (response.status === 200) {
+          console.log("Відео успішно встановлено");
+        } else {
+          console.error("Помилка при встановленні відео");
+        }
+      })
+      .catch((error) => {
+        console.error("Помилка при встановленні відео:", error.message);
+      });
     setInput("");
   };
 
