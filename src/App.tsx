@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import LogInForm from "./pages/LogIn";
 import Room from "./pages/Room";
 import RoomEntrance from "./pages/RoomEntrance";
+import RoomList from "./components/RoomList";
 //import RoomList from "./components/RoomList";
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
         <Route path="/login" element={<LogInForm />} />
         <Route path="/room_entrance" element={<RoomEntrance />} />
         <Route path="/room/:roomid" element={<Room />} />
+        <Route path="/rooms" element={<RoomList />} />
         <Route path="/error" element={<NotFound />} />
         <Route path="/*" element={<NotFound />} />
       </Routes>

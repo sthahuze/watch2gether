@@ -1,25 +1,39 @@
+import React, { useEffect, useState } from "react";
 import { Container, ListGroup } from "react-bootstrap";
+import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const server = "https://gruppe9.toni-barth.com";
 
 function RoomList() {
-  const list = [
-    "Room 1",
-    "Room 2",
-    "Room 3",
-    "Room 4",
-    "Room 5",
-    "Room 6",
-    "Room 7",
-    "Room 8",
-    "Room 9",
-    "Room 10",
-    "Room 11",
-    "Room 12",
-    "Room 13",
-    "Room 14",
-    "Room 15",
-  ];
+  const [list, setList] = useState<string[]>([]);
+
+  useEffect(() => {
+    axios
+      .get(`${server}/rooms`)
+      .then((response) => {
+        const roomNames = response.data.rooms.map((room: any) => room.name);
+        setList(roomNames);
+      })
+      .catch((error) => {
+        toast.error("Error uploading rooms" + error.message, {
+          position: "top-right",
+          autoClose: 1500,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: false,
+          progress: undefined,
+          theme: "colored",
+        });
+        console.log(error);
+      });
+  }, []);
+
   const isSmallScreen = window.innerWidth < 768;
   const containerHeight = isSmallScreen ? 260 : 580;
+
   return (
     <div
       style={{
@@ -37,6 +51,7 @@ function RoomList() {
           ))}
         </ListGroup>
       </Container>
+      <ToastContainer />
     </div>
   );
 }

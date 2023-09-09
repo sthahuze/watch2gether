@@ -26,7 +26,7 @@ function Navigation() {
     axios
       .delete(`${server}/users/${userIdToDelete}`)
       .then((response) => {
-        if (response.status === 201) {
+        if (response.status === 200) {
           console.log("User was successfully deleted");
           //pop up
           toast.success("User was successfully logged out", {
@@ -173,6 +173,9 @@ function Navigation() {
           <Nav>
             <Nav.Link as={Link} to="/">
               Home
+            </Nav.Link>
+            <Nav.Link as={Link} to="/rooms">
+              Room List
             </Nav.Link>
             <Nav.Link onClick={handleCreateRoom}>Create room</Nav.Link>
             <Nav.Link onClick={handleEnterTheRoom}>Enter The room</Nav.Link>
