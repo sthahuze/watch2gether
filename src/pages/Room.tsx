@@ -4,7 +4,7 @@ import { CustomForm } from "../components/Form";
 import Youtube from "../components/Youtube";
 import Container from "react-bootstrap/Container";
 import { Col, Row } from "react-bootstrap";
-import RoomList from "../components/RoomList";
+import Chat from "../components/Chat";
 import axios from "axios";
 
 const server = "https://gruppe9.toni-barth.com";
@@ -76,7 +76,7 @@ function Room() {
           </div>
         </Col>
         <Col>
-          <RoomList />
+          <Chat />
         </Col>
       </Row>
     </Container>
