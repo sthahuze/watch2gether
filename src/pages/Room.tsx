@@ -9,31 +9,55 @@ import axios from "axios";
 
 const server = "https://gruppe9.toni-barth.com";
 
+function youtube_link(setYoutubeLink: any, youtubeLink: any) {
+  const roomid = localStorage.getItem("roomid");
+  axios
+    .get(`${server}/rooms/${roomid}/video`)
+    .then((response) => {
+      if (response.status === 200) {
+        // Оновлюємо URL відео, якщо отримали відповідь від сервера
+        if (response.data.url !== youtubeLink) {
+          setYoutubeLink(response.data.url);
+        }
+      }
+    })
+    .catch((error) => {
+      console.error("Помилка при отриманні URL відео:", error.message);
+      setYoutubeLink("Error loading video"); // Встановлюємо помилкове повідомлення у разі помилки
+    });
+}
+
+
+
 function Room() {
   const navigate = useNavigate();
   const [youtubeLink, setYoutubeLink] = useState<string | null>("");
   const roomid = localStorage.getItem("roomid");
-  console.log(roomid);
+
+
+  //сюди можна додати функцію, яка буде перевіряти користувачів кімнати
+  function sendRequestToServer() {
+    youtube_link(setYoutubeLink, youtubeLink);
+  }
 
   useEffect(() => {
     if (roomid === "") {
       navigate(`/error`);
     } else {
       // Виконуємо запит до сервера, щоб отримати URL відео для кімнати
-      axios
-        .get(`${server}/rooms/${roomid}/video`)
-        .then((response) => {
-          if (response.status === 200) {
-            // Оновлюємо URL відео, якщо отримали відповідь від сервера
-            setYoutubeLink(response.data.url);
-          }
-        })
-        .catch((error) => {
-          console.error("Помилка при отриманні URL відео:", error.message);
-          setYoutubeLink("Error loading video"); // Встановлюємо помилкове повідомлення у разі помилки
-        });
+      youtube_link(setYoutubeLink, youtubeLink);
     }
-  }, [roomid, navigate]);
+  }, [roomid, navigate, setYoutubeLink, youtubeLink]);
+
+  useEffect(() => {
+    // Створюємо інтервал тільки після того, як компонент був змонтований
+    const intervalId = setInterval(sendRequestToServer, 1000);
+
+    // При виході з компоненту видаляємо інтервал
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
 
   return (
     <Container>

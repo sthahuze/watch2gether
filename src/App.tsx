@@ -1,7 +1,6 @@
 import NavBar from "./components/NavBar";
 import { Routes, Route } from "react-router-dom";
 import Footer from "./components/Footer";
-//import LogInForm from "./components/LogInForm";
 import Stack from "react-bootstrap/Stack";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Home from "./pages/Home";
@@ -10,7 +9,6 @@ import LogInForm from "./pages/LogIn";
 import Room from "./pages/Room";
 import RoomEntrance from "./pages/RoomEntrance";
 import RoomList from "./components/RoomList";
-//import RoomList from "./components/RoomList";
 
 function App() {
   return (
