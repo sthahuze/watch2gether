@@ -44,10 +44,11 @@ function Navigation() {
 
   const handleLogout = () => {
     //delete username from browser
-    localStorage.setItem("username", "");
+    localStorage.removeItem("username");
+
     const userIdToDelete = localStorage.getItem("userID");
     //delete userID from browser
-    localStorage.setItem("userID", "");
+    localStorage.removeItem("userID");
     //send HttpDelete request to server
     axios
       .delete(`${server}/users/${userIdToDelete}`)

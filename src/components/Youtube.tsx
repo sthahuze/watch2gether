@@ -1,83 +1,55 @@
 import React, { useState, useRef, useEffect } from "react";
 import ReactPlayer from "react-player";
+import axios from "axios";
+
+const server = "https://gruppe9.toni-barth.com";
 
 interface YoutubeProps {
   youtubeLink: string;
 }
 
 const Youtube: React.FC<YoutubeProps> = ({ youtubeLink }) => {
-  const [seekToTime, setSeekToTime] = useState<number | null>(null);
-  const [isPlaying /*, setIsPlaying*/] = useState<boolean>(false);
-  const playerRef = useRef<ReactPlayer | null>(null);
-
-  useEffect(() => {
-    if (seekToTime !== null && playerRef.current) {
-      playerRef.current.seekTo(seekToTime, "seconds");
-      setSeekToTime(null);
-    }
-  }, [seekToTime]);
+  const roomid = localStorage.getItem("roomid");
+  const userid = localStorage.getItem("userID");
+  function sendRequestToServer() {}
 
   const handlePlay = () => {
-    if (playerRef.current) {
-      //const currentTime = playerRef.current.getCurrentTime().toFixed(2);
-      //server connection needed
-      /*socket.emit("seek", {
-        roomid: localStorage.getItem("roomid"),
-        time: currentTime,
+    console.log("Відео почало відтворюватися"); /*
+    axios
+      .put(`${server}/${roomid}/status`, { user: userid, status: "play" })
+      .then((response) => {
+        console.log("Запит успішно відправлено");
+      })
+      .catch((error) => {
+        console.error("Помилка при відправці запиту:", error);
       });*/
-      //server connection needed
-      //socket.emit("play", localStorage.getItem("roomid"));
-    }
   };
 
   const handlePause = () => {
-    //server connection needed
-    //socket.emit("pause", localStorage.getItem("roomid"));
+    console.log("Відео зупинилося");
+    // Додайте ваш код для відслідковування події зупинки
   };
 
-  /* const handlePlayVideo = () => {
-    if (playerRef.current) {
-      playerRef.current.getInternalPlayer().playVideo();
-      setIsPlaying(true);
-    }
-  };*/
-
-  /*const handlePauseVideo = () => {
-    if (playerRef.current) {
-      playerRef.current.getInternalPlayer().pauseVideo();
-      setIsPlaying(false);
-    }
+  const handleSeek = (time: number) => {
+    console.log(`Відео перемотано до ${time} секунд`);
+    // Додайте ваш код для відслідковування події перемотування
   };
-
-  const handleConsoleSeek = (timeString: any) => {
-    const time = parseInt(timeString || "", 10);
-    if (!isNaN(time)) {
-      setSeekToTime(time);
-    }
-  };*/
 
   useEffect(() => {
-    //server connection needed
-    //socket.on("seek", handleConsoleSeek);
-    /*socket.on("pause", () => {
-      handlePauseVideo();
-    });
-    //server connection needed
-    //socket.on("play", handlePlayVideo);*/
-  });
+    const intervalId = setInterval(sendRequestToServer, 1000);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, []);
 
   return (
-    <div className="mb-5">
-      <ReactPlayer
-        ref={playerRef}
-        url={youtubeLink}
-        controls
-        playing={isPlaying}
-        onPlay={handlePlay}
-        onPause={handlePause}
-        width="100%"
-      />
-    </div>
+    <ReactPlayer
+      url={youtubeLink}
+      onPlay={handlePlay}
+      onPause={handlePause}
+      onSeek={handleSeek}
+      controls // Включити контроли відтворення
+    />
   );
 };
 
