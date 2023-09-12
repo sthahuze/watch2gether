@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/watch2gether/static/css/main.25fc958f.css",
-    "main.js": "/watch2gether/static/js/main.c0a37b8a.js",
+    "main.css": "/watch2gether/static/css/main.7822a895.css",
+    "main.js": "/watch2gether/static/js/main.4de731eb.js",
     "static/js/787.99cc74bc.chunk.js": "/watch2gether/static/js/787.99cc74bc.chunk.js",
     "static/media/jvleergjp-rbvdis.jpg": "/watch2gether/static/media/jvleergjp-rbvdis.1a94d6a3b8a87802608c.jpg",
     "index.html": "/watch2gether/index.html",
-    "main.25fc958f.css.map": "/watch2gether/static/css/main.25fc958f.css.map",
-    "main.c0a37b8a.js.map": "/watch2gether/static/js/main.c0a37b8a.js.map",
+    "main.7822a895.css.map": "/watch2gether/static/css/main.7822a895.css.map",
+    "main.4de731eb.js.map": "/watch2gether/static/js/main.4de731eb.js.map",
     "787.99cc74bc.chunk.js.map": "/watch2gether/static/js/787.99cc74bc.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.25fc958f.css",
-    "static/js/main.c0a37b8a.js"
+    "static/css/main.7822a895.css",
+    "static/js/main.4de731eb.js"
   ]
 }
