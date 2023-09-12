@@ -110,7 +110,7 @@ function Navigation() {
 
   const handleEnterTheRoom = () => {
     const username = localStorage.getItem("username"); // Виклик функції CreateNewRoom
-    if (username === "") {
+    if (username === "" || username === null) {
       navigate(`/login`);
     } else {
       navigate("/room_entrance");

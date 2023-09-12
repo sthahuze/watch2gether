@@ -19,17 +19,6 @@ function youtube_link(setYoutubeLink: any, youtubeLink: any) {
         // Оновлюємо URL відео, якщо отримали відповідь від сервера
         if (response.data.url !== youtubeLink) {
           setYoutubeLink(response.data.url);
-          axios
-            .put(`${server}/${roomid}/status`, {
-              user: userid,
-              status: "pause",
-            })
-            .then((response) => {
-              console.log("Запит успішно відправлено");
-            })
-            .catch((error) => {
-              console.error("Помилка при відправці запиту:", error);
-            });
         }
       }
     })

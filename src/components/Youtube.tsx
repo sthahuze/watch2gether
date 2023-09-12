@@ -3,6 +3,8 @@ import ReactPlayer from "react-player";
 import axios from "axios";
 
 const server = "https://gruppe9.toni-barth.com";
+var state = "";
+let isFunctionEnabled = true;
 
 interface YoutubeProps {
   youtubeLink: string;
@@ -11,83 +13,100 @@ interface YoutubeProps {
 const Youtube: React.FC<YoutubeProps> = ({ youtubeLink }) => {
   const roomid = localStorage.getItem("roomid");
   const userid = localStorage.getItem("userID");
+  const [seekToTime, setSeekToTime] = useState<number | null>(null);
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const playerRef = useRef<ReactPlayer | null>(null);
-  const [state, setState] = useState<string | null>("");
 
   function sendRequestToServer() {
-    axios
-      .get(`${server}/rooms/${roomid}/status`)
-      .then((response) => {
-        const status = response.data.status;
-        if (status !== state) {
-          console.log("Changing status");
-          console.log(status);
-          if (status === "play") {
-            axios
-              .get(`${server}/rooms/${roomid}/position`)
-              .then((response) => {
-                const { position } = response.data; // Отримайте позицію з відповіді
-                console.log("Позиція відео:", position);
-                setState("play");
-              })
-              .catch((error) => {
-                console.error("Помилка при відправці запиту:", error);
-              });
-            console.log("video is set to play");
+    if (isFunctionEnabled === true) {
+      axios
+        .get(`${server}/rooms/${roomid}/status`)
+        .then((response) => {
+          const status = response.data.status;
+          console.log(status, state);
+          if (status !== state) {
+            if (status === "playing") {
+              axios
+                .get(`${server}/rooms/${roomid}/position`)
+                .then((response) => {
+                  const { position } = response.data; // Отримайте позицію з відповіді
+                  console.log("Позиція відео:", position);
+                  state = "playing";
+                  if (playerRef.current) {
+                    playerRef.current.seekTo(position);
+                    playerRef.current.getInternalPlayer().playVideo();
+                    setIsPlaying(true);
+                  }
+                })
+                .catch((error) => {
+                  console.error("Error when getting position:", error);
+                });
+              console.log("video is set to play");
+            }
+            if (status === "paused") {
+              state = "paused";
+              if (playerRef.current) {
+                playerRef.current.getInternalPlayer().pauseVideo();
+                setIsPlaying(false);
+              }
+              console.log("video is set to paused");
+            }
           }
-          if (status === "paused") {
-            setState("paused");
-            console.log("video is set to paused");
-          }
-        }
-      })
-      .catch((error) => {
-        console.error("Помилка при відправці запиту:", error);
-      });
+        })
+        .catch((error) => {
+          console.error("Помилка при відправці запиту:", error);
+        });
+    }
   }
 
   const handlePlay = () => {
-    setState("play");
+    isFunctionEnabled = false;
+    state = "playing";
     const currentPosition = playerRef.current?.getCurrentTime() || 0;
-
     console.log("Відео почало відтворюватися");
 
     //send state
     axios
-      .put(`${server}/rooms/${roomid}/status`, { user: userid, status: "play" })
+      .put(`${server}/rooms/${roomid}/status`, {
+        user: userid,
+        status: "playing",
+      })
       .then((response) => {
-        console.log("Запит успішно відправлено");
+        console.log("state: " + state);
+        console.log("Запит на play надіслано");
+        axios
+          .put(`${server}/rooms/${roomid}/position`, {
+            user: userid,
+            position: currentPosition,
+          })
+          .then((response) => {
+            console.log("Запит на позицію надіслано");
+            isFunctionEnabled = true;
+          })
+          .catch((error) => {
+            console.error("Помилка при відправці запиту:", error);
+          });
       })
       .catch((error) => {
         console.error("Помилка при відправці запиту:", error);
       });
 
     //send position
-    axios
-      .put(`${server}/rooms/${roomid}/position`, {
-        user: userid,
-        position: currentPosition,
-      })
-      .then((response) => {
-        console.log("Запит успішно відправлено");
-      })
-      .catch((error) => {
-        console.error("Помилка при відправці запиту:", error);
-      });
   };
 
   const handlePause = () => {
-    setState("paused");
-
+    isFunctionEnabled = false;
+    state = "paused";
     console.log("Відео зупинилося");
     //send state
     axios
       .put(`${server}/rooms/${roomid}/status`, {
         user: userid,
-        status: "status",
+        status: "paused",
       })
       .then((response) => {
-        console.log("Запит успішно відправлено");
+        console.log("Запит на паузу надіслано");
+        isFunctionEnabled = true;
       })
       .catch((error) => {
         console.error("Помилка при відправці запиту:", error);
@@ -99,16 +118,20 @@ const Youtube: React.FC<YoutubeProps> = ({ youtubeLink }) => {
     return () => {
       clearInterval(intervalId);
     };
-  }, []);
+  }, [sendRequestToServer]);
 
   return (
-    <ReactPlayer
-      ref={playerRef}
-      url={youtubeLink}
-      onPlay={handlePlay}
-      onPause={handlePause}
-      controls // Включити контроли відтворення
-    />
+    <div className="mb-5">
+      <ReactPlayer
+        ref={playerRef}
+        url={youtubeLink}
+        controls
+        playing={isPlaying}
+        onPlay={handlePlay}
+        onPause={handlePause}
+        width="100%"
+      />
+    </div>
   );
 };
 
