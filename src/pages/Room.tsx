@@ -11,6 +11,7 @@ const server = "https://gruppe9.toni-barth.com";
 
 function youtube_link(setYoutubeLink: any, youtubeLink: any) {
   const roomid = localStorage.getItem("roomid");
+  const userid = localStorage.getItem("userID");
   axios
     .get(`${server}/rooms/${roomid}/video`)
     .then((response) => {
@@ -18,6 +19,17 @@ function youtube_link(setYoutubeLink: any, youtubeLink: any) {
         // Оновлюємо URL відео, якщо отримали відповідь від сервера
         if (response.data.url !== youtubeLink) {
           setYoutubeLink(response.data.url);
+          axios
+            .put(`${server}/${roomid}/status`, {
+              user: userid,
+              status: "pause",
+            })
+            .then((response) => {
+              console.log("Запит успішно відправлено");
+            })
+            .catch((error) => {
+              console.error("Помилка при відправці запиту:", error);
+            });
         }
       }
     })
@@ -27,13 +39,10 @@ function youtube_link(setYoutubeLink: any, youtubeLink: any) {
     });
 }
 
-
-
 function Room() {
   const navigate = useNavigate();
   const [youtubeLink, setYoutubeLink] = useState<string | null>("");
   const roomid = localStorage.getItem("roomid");
-
 
   //сюди можна додати функцію, яка буде перевіряти користувачів кімнати
   function sendRequestToServer() {

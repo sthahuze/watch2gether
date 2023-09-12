@@ -31,9 +31,6 @@ function RoomList() {
       });
   }, []);
 
-  const isSmallScreen = window.innerWidth < 768;
-  const containerHeight = isSmallScreen ? 260 : 580;
-
   return (
     <div>
       <Container className="pt-4 pb-4">

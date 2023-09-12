@@ -73,7 +73,8 @@ function Navigation() {
   const handleCreateRoom = () => {
     const username = localStorage.getItem("username");
     const userID = localStorage.getItem("userID");
-    if (username === "") {
+    console.log(username);
+    if (username === "" || username === null) {
       navigate(`/login`);
     } else {
       axios

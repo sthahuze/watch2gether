@@ -1,7 +1,6 @@
 import React from "react";
 import { Container } from "react-bootstrap";
-import { Input } from "react-chat-elements";
-import { TextMessage } from "react-chat-elements";
+import { Input, TextMessage } from "react-chat-elements";
 
 function Chat() {
   return (

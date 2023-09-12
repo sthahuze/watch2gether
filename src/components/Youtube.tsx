@@ -11,28 +11,87 @@ interface YoutubeProps {
 const Youtube: React.FC<YoutubeProps> = ({ youtubeLink }) => {
   const roomid = localStorage.getItem("roomid");
   const userid = localStorage.getItem("userID");
-  function sendRequestToServer() {}
+  const playerRef = useRef<ReactPlayer | null>(null);
+  const [state, setState] = useState<string | null>("");
+
+  function sendRequestToServer() {
+    axios
+      .get(`${server}/rooms/${roomid}/status`)
+      .then((response) => {
+        const status = response.data.status;
+        if (status !== state) {
+          console.log("Changing status");
+          console.log(status);
+          if (status === "play") {
+            axios
+              .get(`${server}/rooms/${roomid}/position`)
+              .then((response) => {
+                const { position } = response.data; // Отримайте позицію з відповіді
+                console.log("Позиція відео:", position);
+                setState("play");
+              })
+              .catch((error) => {
+                console.error("Помилка при відправці запиту:", error);
+              });
+            console.log("video is set to play");
+          }
+          if (status === "paused") {
+            setState("paused");
+            console.log("video is set to paused");
+          }
+        }
+      })
+      .catch((error) => {
+        console.error("Помилка при відправці запиту:", error);
+      });
+  }
 
   const handlePlay = () => {
-    console.log("Відео почало відтворюватися"); /*
+    setState("play");
+    const currentPosition = playerRef.current?.getCurrentTime() || 0;
+
+    console.log("Відео почало відтворюватися");
+
+    //send state
     axios
-      .put(`${server}/${roomid}/status`, { user: userid, status: "play" })
+      .put(`${server}/rooms/${roomid}/status`, { user: userid, status: "play" })
       .then((response) => {
         console.log("Запит успішно відправлено");
       })
       .catch((error) => {
         console.error("Помилка при відправці запиту:", error);
-      });*/
+      });
+
+    //send position
+    axios
+      .put(`${server}/rooms/${roomid}/position`, {
+        user: userid,
+        position: currentPosition,
+      })
+      .then((response) => {
+        console.log("Запит успішно відправлено");
+      })
+      .catch((error) => {
+        console.error("Помилка при відправці запиту:", error);
+      });
   };
 
   const handlePause = () => {
-    console.log("Відео зупинилося");
-    // Додайте ваш код для відслідковування події зупинки
-  };
+    setState("paused");
 
-  const handleSeek = (time: number) => {
-    console.log(`Відео перемотано до ${time} секунд`);
-    // Додайте ваш код для відслідковування події перемотування
+    console.log("Відео зупинилося");
+    //send state
+    axios
+      .put(`${server}/rooms/${roomid}/status`, {
+        user: userid,
+        status: "status",
+      })
+      .then((response) => {
+        console.log("Запит успішно відправлено");
+      })
+      .catch((error) => {
+        console.error("Помилка при відправці запиту:", error);
+      });
   };
 
   useEffect(() => {
@@ -44,10 +103,10 @@ const Youtube: React.FC<YoutubeProps> = ({ youtubeLink }) => {
 
   return (
     <ReactPlayer
+      ref={playerRef}
       url={youtubeLink}
       onPlay={handlePlay}
       onPause={handlePause}
-      onSeek={handleSeek}
       controls // Включити контроли відтворення
     />
   );
