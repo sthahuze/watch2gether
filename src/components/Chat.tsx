@@ -58,7 +58,7 @@ function Chat() {
             color: "white",
           }}
         >
-          Отправить
+          Send
         </button>
       </div>
     </div>
