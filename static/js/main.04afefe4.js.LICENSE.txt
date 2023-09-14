@@ -19,6 +19,13 @@
           	 * [subject to terms](http://www.robertpenner.com/easing_terms_of_use.html).
           	 */
 
+/*!
+ * clipboard.js v2.0.11
+ * https://clipboardjs.com/
+ *
+ * Licensed MIT © Zeno Rocha
+ */
+
 /**
  * @license React
  * react-dom.production.min.js
