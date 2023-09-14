@@ -17,48 +17,50 @@ const Youtube: React.FC<YoutubeProps> = ({ youtubeLink }) => {
   const playerRef = useRef<ReactPlayer | null>(null);
 
   function sendRequestToServer() {
-    if (isFunctionEnabled === true) {
-      axios
-        .get(`${server}/rooms/${roomid}/status`)
-        .then((response) => {
-          const status = response.data.status;
-          console.log(status, state);
-          if (status !== state) {
-            if (status === "playing") {
-              axios
-                .get(`${server}/rooms/${roomid}/position`)
-                .then((response) => {
-                  const { position } = response.data; // Отримайте позицію з відповіді
-                  console.log("Позиція відео:", position);
-                  if (isFunctionEnabled === true) {
-                    state = "playing";
-                    if (playerRef.current) {
-                      playerRef.current.seekTo(position);
-                      playerRef.current.getInternalPlayer().playVideo();
-                      setIsPlaying(true);
+    if (youtubeLink !== "" && youtubeLink !== null) {
+      if (isFunctionEnabled === true) {
+        axios
+          .get(`${server}/rooms/${roomid}/status`)
+          .then((response) => {
+            const status = response.data.status;
+            console.log(status, state);
+            if (status !== state) {
+              if (status === "playing") {
+                axios
+                  .get(`${server}/rooms/${roomid}/position`)
+                  .then((response) => {
+                    const { position } = response.data; // Отримайте позицію з відповіді
+                    console.log("Позиція відео:", position);
+                    if (isFunctionEnabled === true) {
+                      state = "playing";
+                      if (playerRef.current) {
+                        playerRef.current.seekTo(position);
+                        playerRef.current.getInternalPlayer().playVideo();
+                        setIsPlaying(true);
+                      }
                     }
+                  })
+                  .catch((error) => {
+                    console.error("Error when getting position:", error);
+                  });
+                console.log("video is set to play");
+              }
+              if (status === "paused") {
+                if (isFunctionEnabled === true) {
+                  state = "paused";
+                  if (playerRef.current) {
+                    playerRef.current.getInternalPlayer().pauseVideo();
+                    setIsPlaying(false);
                   }
-                })
-                .catch((error) => {
-                  console.error("Error when getting position:", error);
-                });
-              console.log("video is set to play");
-            }
-            if (status === "paused") {
-              if (isFunctionEnabled === true) {
-                state = "paused";
-                if (playerRef.current) {
-                  playerRef.current.getInternalPlayer().pauseVideo();
-                  setIsPlaying(false);
+                  console.log("video is set to paused");
                 }
-                console.log("video is set to paused");
               }
             }
-          }
-        })
-        .catch((error) => {
-          console.error("Помилка при відправці запиту:", error);
-        });
+          })
+          .catch((error) => {
+            console.error("Помилка при відправці запиту:", error);
+          });
+      }
     }
   }
 
