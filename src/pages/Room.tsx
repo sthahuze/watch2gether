@@ -8,6 +8,7 @@ import Chat from "../components/Chat";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ClipboardJS from "clipboard";
 
 const server = "https://gruppe9.toni-barth.com";
 
@@ -125,6 +126,36 @@ function Room() {
     }
   }, [roomid, navigate, setYoutubeLink, youtubeLink]);
 
+  useEffect(() => {
+    // Инициализация ClipboardJS
+    const clipboard = new ClipboardJS(".copy-button");
+
+    // Обработчик успешного копирования
+    clipboard.on("success", (e) => {
+      console.log("Link copied to clipboard: ", e.text);
+    });
+
+    // Обработчик ошибок при копировании
+    clipboard.on("error", (e) => {
+      console.error("Failed to copy link: ", e.text);
+    });
+
+    // Убираем обработчики при размонтировании компонента
+    return () => {
+      clipboard.destroy();
+    };
+  }, []);
+
+  const copyRoomLink = () => {
+    const roomLink = `${window.location.origin}/watch2gether/room/${roomid}`;
+    const dummyInput = document.createElement("input");
+    document.body.appendChild(dummyInput);
+    dummyInput.setAttribute("value", roomLink);
+    dummyInput.select();
+    document.execCommand("copy");
+    document.body.removeChild(dummyInput);
+  };
+
   function sendRequestToServer() {
     youtube_link(setYoutubeLink, youtubeLink);
 
@@ -176,6 +207,9 @@ function Room() {
   return (
     <Container>
       <div className="Header pt-3 pb-2">You are in room: {roomid}</div>
+      <button className="copy-button btn btn-success" onClick={copyRoomLink}>
+        Copy Link
+      </button>
       <Row>
         <Col lg="9">
           <div className="Video">
