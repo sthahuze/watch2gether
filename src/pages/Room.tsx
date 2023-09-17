@@ -9,6 +9,7 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ClipboardJS from "clipboard";
+import { success_pop_up, info_pop_up } from "../api/pop_up";
 
 const server = "https://gruppe9.toni-barth.com";
 
@@ -18,32 +19,6 @@ interface User {
 }
 
 var users: User[] = [];
-
-function new_pop_up(message: any) {
-  toast.success(message, {
-    position: "top-right",
-    autoClose: 1500,
-    hideProgressBar: true,
-    closeOnClick: true,
-    pauseOnHover: false,
-    draggable: false,
-    progress: undefined,
-    theme: "colored",
-  });
-}
-
-function left_pop_up(message: any) {
-  toast(message, {
-    position: "top-right",
-    autoClose: 1500,
-    hideProgressBar: true,
-    closeOnClick: true,
-    pauseOnHover: false,
-    draggable: false,
-    progress: undefined,
-    theme: "colored",
-  });
-}
 
 interface ArrayComparisonResult {
   equal: boolean;
@@ -174,14 +149,14 @@ function Room() {
               // Робимо щось, коли є додані елементи
               comparisonResult.added.forEach((addedItem) => {
                 console.log("User " + addedItem.name + " entered the room");
-                new_pop_up("User " + addedItem.name + " entered the room");
+                success_pop_up("User " + addedItem.name + " entered the room");
               });
             }
             if (comparisonResult.removed.length > 0) {
               // Робимо щось, коли є видалені елементи
               comparisonResult.removed.forEach((removedItem) => {
                 console.log("User " + removedItem.name + " left the room");
-                new_pop_up("User " + removedItem.name + " left the room");
+                info_pop_up("User " + removedItem.name + " left the room");
               });
             }
             users = all_users; // Оновлюємо стан після отримання даних

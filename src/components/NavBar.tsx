@@ -3,34 +3,9 @@ import { Container, Nav, Navbar, Dropdown } from "react-bootstrap";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { success_pop_up, error_pop_up } from "../api/pop_up";
 
 const server = "https://gruppe9.toni-barth.com";
-
-function success_pop_up(message: any) {
-  toast.success(message, {
-    position: "top-right",
-    autoClose: 1500,
-    hideProgressBar: true,
-    closeOnClick: true,
-    pauseOnHover: false,
-    draggable: false,
-    progress: undefined,
-    theme: "colored",
-  });
-}
-
-function error_pop_up(message: any) {
-  toast.error(message, {
-    position: "top-right",
-    autoClose: 1500,
-    hideProgressBar: true,
-    closeOnClick: true,
-    pauseOnHover: false,
-    draggable: false,
-    progress: undefined,
-    theme: "colored",
-  });
-}
 
 function useAuth() {
   const username = localStorage.getItem("username");
@@ -49,6 +24,7 @@ function Navigation() {
     const userIdToDelete = localStorage.getItem("userID");
     //delete userID from browser
     localStorage.removeItem("userID");
+    localStorage.removeItem("roomid");
     //send HttpDelete request to server
     axios
       .delete(`${server}/users/${userIdToDelete}`)
@@ -82,7 +58,7 @@ function Navigation() {
         .then((response) => {
           if (response.status === 201) {
             const roomid = response.data.name;
-            localStorage.setItem("roomid", roomid);
+            // localStorage.setItem("roomid", roomid);
 
             axios
               .put(`${server}/rooms/${roomid}/users`, { user: userID })
