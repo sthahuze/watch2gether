@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { Container, ListGroup } from "react-bootstrap";
+import { Container, ListGroup, Button } from "react-bootstrap";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSync } from "@fortawesome/free-solid-svg-icons";
 
 const server = "https://gruppe9.toni-barth.com";
 
 function RoomList() {
   const [list, setList] = useState<string[]>([]);
 
-  useEffect(() => {
+  function update_room_list() {
     axios
       .get(`${server}/rooms`)
       .then((response) => {
@@ -29,12 +31,22 @@ function RoomList() {
         });
         console.log(error);
       });
+  }
+
+  useEffect(() => {
+    update_room_list();
   }, []);
 
   return (
     <div>
       <Container className="pt-4 pb-4">
-        <h1 className="text-center pb-2">List of open rooms</h1>
+        <div className="d-flex justify-content-between align-items-center">
+          <h1 className="text-center pb-2">List of open rooms</h1>
+          <Button variant="info" onClick={update_room_list}>
+            <FontAwesomeIcon icon={faSync} className="mr-2" />
+            Update
+          </Button>
+        </div>
         <ListGroup>
           {list.map((item, index) => (
             <ListGroup.Item key={index}>{item}</ListGroup.Item>
