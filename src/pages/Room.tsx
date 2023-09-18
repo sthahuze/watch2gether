@@ -39,7 +39,7 @@ function Room() {
     const parts = window.location.href.split("/room/");
     if (parts.length === 2) {
       room = parts[1];
-      setRoomId(parts[1]);
+
       localStorage.setItem("roomid", room);
       console.log("roomid valid" + room);
     } else {
@@ -58,6 +58,7 @@ function Room() {
         // Перенаправляємо користувача на сторінку логіну
         navigate("/login");
       } else {
+        setRoomId(room);
         try {
           const roomE = await room_existance(room);
 
@@ -100,14 +101,16 @@ function Room() {
   }, [FetchState]);
 
   useEffect(() => {
-    const parts = window.location.href.split("/room/");
-    if (parts.length === 2) {
-      const newRoomId = parts[1];
-      setRoomId(newRoomId);
-      localStorage.setItem("roomid", newRoomId);
-    } else {
-      localStorage.removeItem("roomid");
-      navigate("/error");
+    if (roomid !== "") {
+      const parts = window.location.href.split("/room/");
+      if (parts.length === 2) {
+        const newRoomId = parts[1];
+        setRoomId(newRoomId);
+        localStorage.setItem("roomid", newRoomId);
+      } else {
+        localStorage.removeItem("roomid");
+        navigate("/error");
+      }
     }
   }, [navigate]);
 
@@ -116,7 +119,7 @@ function Room() {
     const intervalId = setInterval(() => {
       youtube_link(setYoutubeLink, youtubeLink);
       users = user_change(users);
-    }, 5000);
+    }, 3000);
 
     // При виході з компоненту видаляємо інтервал
     return () => {

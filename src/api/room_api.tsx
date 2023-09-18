@@ -76,10 +76,13 @@ export function youtube_link(setYoutubeLink: any, youtubeLink: any) {
 }
 
 export function user_change(users: User[]): User[] {
+  console.log("new user check");
   const roomid = localStorage.getItem("roomid");
+  console.log("new user check in " + roomid);
   axios
     .get(`${server}/rooms/${roomid}/users`)
     .then((response) => {
+      console.log("got response");
       // handle success
       const all_users = response.data.users;
       if (users.length === 0) {
