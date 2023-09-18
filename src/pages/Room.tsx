@@ -8,43 +8,121 @@ import Chat from "../components/Chat";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ClipboardJS from "clipboard";
-import { youtube_link, user_change, copyRoomLink } from "../api/room_api";
+import {
+  youtube_link,
+  user_change,
+  copyRoomLink,
+  room_existance,
+  user_in_room,
+} from "../api/room_api";
+import { error_pop_up } from "../api/pop_up";
+import { enter_room } from "../api/enter_room";
+
+interface User {
+  id: number;
+  name: string;
+}
+
+var users: User[] = [];
 
 function Room() {
   const navigate = useNavigate();
   const [youtubeLink, setYoutubeLink] = useState<string | null>("");
-  const roomid = localStorage.getItem("roomid");
+  const [roomid, setRoomId] = useState<string>(""); // Використовуємо стан для збереження roomid
+  var room = "";
+  var FetchState = false;
+  const userid = localStorage.getItem("userID");
 
-  useEffect(() => {
-    if (roomid === "") {
-      navigate(`/error`);
+  const fetchData = async () => {
+    FetchState = true;
+    // Розбийте URL на частини за допомогою регулярного виразу
+    const parts = window.location.href.split("/room/");
+    if (parts.length === 2) {
+      room = parts[1];
+      setRoomId(parts[1]);
+      localStorage.setItem("roomid", room);
+      console.log("roomid valid" + room);
     } else {
-      // Виконуємо запит до сервера, щоб отримати URL відео для кімнати
-      youtube_link(setYoutubeLink, youtubeLink);
+      localStorage.removeItem("roomid");
+      navigate("/error");
     }
-  }, [roomid, navigate, setYoutubeLink, youtubeLink]);
+
+    localStorage.removeItem("tmpURL");
+    try {
+      // Перевірка, чи користувач увійшов у систему
+      if (userid === "" || userid === null) {
+        // Якщо користувач не увійшов у систему, викликаємо помилку та зберігаємо URL
+        error_pop_up("You have to log in first!");
+        localStorage.setItem("tmpURL", `/room/${room}`);
+
+        // Перенаправляємо користувача на сторінку логіну
+        navigate("/login");
+      } else {
+        try {
+          const roomE = await room_existance(room);
+
+          if (roomE === false) {
+            localStorage.removeItem("roomid");
+            error_pop_up("Room does not exist");
+            navigate("/");
+          } else {
+            const user = await user_in_room(room);
+
+            if (user === false) {
+              console.log("user not in room");
+              const entrance = await enter_room(room, userid);
+
+              if (entrance === false) {
+                localStorage.removeItem("roomid");
+                navigate("/error");
+              }
+            }
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    // Инициализация ClipboardJS
+    if (FetchState === false) {
+      fetchData();
+    }
+
     const clipboard = new ClipboardJS(".copy-button");
-    // Убираем обработчики при размонтировании компонента
+
     return () => {
       clipboard.destroy();
     };
-  }, []);
+  }, [FetchState]);
+
+  useEffect(() => {
+    const parts = window.location.href.split("/room/");
+    if (parts.length === 2) {
+      const newRoomId = parts[1];
+      setRoomId(newRoomId);
+      localStorage.setItem("roomid", newRoomId);
+    } else {
+      localStorage.removeItem("roomid");
+      navigate("/error");
+    }
+  }, [navigate]);
 
   useEffect(() => {
     // Створюємо інтервал тільки після того, як компонент був змонтований
     const intervalId = setInterval(() => {
       youtube_link(setYoutubeLink, youtubeLink);
-      user_change();
-    }, 3000);
+      users = user_change(users);
+    }, 5000);
 
     // При виході з компоненту видаляємо інтервал
     return () => {
       clearInterval(intervalId);
     };
-  }, []);
+  }, [youtubeLink]);
 
   return (
     <Container>

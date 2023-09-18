@@ -1,13 +1,11 @@
 import { useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import background from "../components/image/jvleergjp-rbvdis.jpg";
-import axios from "axios";
 import { Container, Button, Modal, Form } from "react-bootstrap";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { success_pop_up, error_pop_up } from "../api/pop_up";
-
-const server = "https://gruppe9.toni-barth.com";
+import { enter_room } from "../api/enter_room";
+import { user_in_room } from "../api/room_api";
 
 function RoomEntrance() {
   const [roomid, setRoomID] = useState("");
@@ -17,24 +15,28 @@ function RoomEntrance() {
     setRoomID(event.target.value);
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const userID = localStorage.getItem("userID");
 
-    axios
-      .put(`${server}/rooms/${roomid}/users`, { user: userID })
-      .then((response) => {
-        if (response.status === 200) {
-          success_pop_up("You successfully entered the Room");
-          //localStorage.setItem("roomid", roomid);
+    try {
+      const isUserInRoom = await user_in_room(roomid);
+
+      if (isUserInRoom) {
+        navigate(`/room/${roomid}`);
+      } else {
+        const enteredRoom = await enter_room(roomid, userID);
+
+        if (enteredRoom) {
           navigate(`/room/${roomid}`);
         } else {
-          error_pop_up("Error " + response.status);
+          navigate("/");
         }
-      })
-      .catch((error) => {
-        error_pop_up("Error " + error.message);
-      });
+      }
+    } catch (error) {
+      console.error(error);
+      navigate("/");
+    }
   };
 
   return (

@@ -8,7 +8,7 @@ import NotFound from "./pages/NotFound";
 import LogInForm from "./pages/LogIn";
 import Room from "./pages/Room";
 import RoomEntrance from "./pages/RoomEntrance";
-import RoomList from "./components/RoomList";
+import RoomList from "./pages/RoomList";
 
 function App() {
   return (

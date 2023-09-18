@@ -3,40 +3,16 @@ import background from "../components/image/jvleergjp-rbvdis.jpg";
 import { Container, Button, Modal, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { success_pop_up, error_pop_up } from "../api/pop_up";
 
 const server = "https://gruppe9.toni-barth.com";
-
-function success_pop_up(message: any) {
-  toast.success(message, {
-    position: "top-right",
-    autoClose: 1500,
-    hideProgressBar: true,
-    closeOnClick: true,
-    pauseOnHover: false,
-    draggable: false,
-    progress: undefined,
-    theme: "colored",
-  });
-}
-
-function error_pop_up(message: any) {
-  toast.error(message, {
-    position: "top-right",
-    autoClose: 1500,
-    hideProgressBar: true,
-    closeOnClick: true,
-    pauseOnHover: false,
-    draggable: false,
-    progress: undefined,
-    theme: "colored",
-  });
-}
 
 function LogInForm() {
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
+  const tmpURL = localStorage.getItem("tmpURL");
 
   //Function that performs log in
   const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -52,7 +28,13 @@ function LogInForm() {
         setUsername("");
         //go back
         success_pop_up("You successfully logged in");
-        navigate("/");
+        console.log(tmpURL);
+        if (tmpURL !== "" && tmpURL !== null) {
+          localStorage.removeItem("tmpURL");
+          navigate(tmpURL);
+        } else {
+          navigate("/");
+        }
       })
       .catch((error) => {
         if (error.response) {

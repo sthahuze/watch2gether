@@ -1,4 +1,4 @@
-import { success_pop_up, info_pop_up } from "../api/pop_up";
+import { success_pop_up, info_pop_up, error_pop_up } from "../api/pop_up";
 import axios from "axios";
 
 const server = "https://gruppe9.toni-barth.com";
@@ -7,8 +7,6 @@ interface User {
   id: number;
   name: string;
 }
-
-var users: User[] = [];
 
 interface ArrayComparisonResult {
   equal: boolean;
@@ -77,7 +75,7 @@ export function youtube_link(setYoutubeLink: any, youtubeLink: any) {
     });
 }
 
-export function user_change() {
+export function user_change(users: User[]): User[] {
   const roomid = localStorage.getItem("roomid");
   axios
     .get(`${server}/rooms/${roomid}/users`)
@@ -104,7 +102,8 @@ export function user_change() {
               info_pop_up("User " + removedItem.name + " left the room");
             });
           }
-          users = all_users; // Оновлюємо стан після отримання даних
+          users = all_users;
+          return users; // Оновлюємо стан після отримання даних
         }
       }
     })
@@ -112,6 +111,7 @@ export function user_change() {
       // handle error
       console.log(error);
     });
+  return users;
 }
 
 export const copyRoomLink = () => {
@@ -124,3 +124,48 @@ export const copyRoomLink = () => {
   document.execCommand("copy");
   document.body.removeChild(dummyInput);
 };
+
+export async function room_existance(desiredRoomName: any): Promise<boolean> {
+  try {
+    const response = await axios.get(`${server}/rooms`);
+    const roomNames = response.data.rooms.map((room: any) => room.name);
+
+    if (roomNames.includes(desiredRoomName)) {
+      console.log(`Кімната "${desiredRoomName}" існує у списку.`);
+      return true; // Змінено на повернення true
+    } else {
+      console.log(`Кімнати "${desiredRoomName}" не існує у списку.`);
+      return false; // Змінено на повернення false
+    }
+  } catch (error) {
+    error_pop_up("There is no such room");
+    console.error("Помилка при перевірці існування кімнати");
+    return false; // Змінено на повернення false
+  }
+}
+
+export async function user_in_room(roomid: string): Promise<boolean> {
+  const desiredId = localStorage.getItem("userID");
+
+  try {
+    const response = await axios.get(`${server}/rooms/${roomid}/users`);
+    const all_users = response.data.users;
+    console.log(all_users);
+
+    const isIdInList = all_users.some(
+      (item: User) => item.id === Number(desiredId)
+    );
+
+    if (isIdInList) {
+      console.log(`Елемент з айді ${desiredId} знайдено в списку.`);
+      return true;
+    } else {
+      console.log(`Елемент з айді ${desiredId} не знайдено в списку.`);
+      return false;
+    }
+  } catch (error) {
+    // handle error
+    console.log(error);
+    return false;
+  }
+}

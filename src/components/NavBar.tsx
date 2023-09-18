@@ -50,16 +50,18 @@ function Navigation() {
     const username = localStorage.getItem("username");
     const userID = localStorage.getItem("userID");
     console.log(username);
-    if (username === "" || username === null) {
-      navigate(`/login`);
-    } else {
-      axios
-        .post(`${server}/rooms/`)
-        .then((response) => {
-          if (response.status === 201) {
-            const roomid = response.data.name;
-            // localStorage.setItem("roomid", roomid);
 
+    axios
+      .post(`${server}/rooms/`)
+      .then((response) => {
+        if (response.status === 201) {
+          const roomid = response.data.name;
+          // localStorage.setItem("roomid", roomid);
+          localStorage.setItem("tmpURL", `/room/${roomid}`);
+          if (userID === "" || userID === null) {
+            error_pop_up("You have to log in first!");
+            navigate("/login");
+          } else {
             axios
               .put(`${server}/rooms/${roomid}/users`, { user: userID })
               .then((response) => {
@@ -73,20 +75,22 @@ function Navigation() {
               .catch((error) => {
                 error_pop_up("Error " + error.message);
               });
-          } else {
-            //error pop up response.status
-            error_pop_up("Error " + response.status);
           }
-        })
-        .catch((error) => {
-          error_pop_up("Error " + error.message);
-        });
-    }
+        } else {
+          //error pop up response.status
+          error_pop_up("Error " + response.status);
+        }
+      })
+      .catch((error) => {
+        error_pop_up("Error " + error.message);
+      });
   };
 
   const handleEnterTheRoom = () => {
     const username = localStorage.getItem("username"); // Виклик функції CreateNewRoom
     if (username === "" || username === null) {
+      localStorage.setItem("tmpURL", "/room_entrance");
+      error_pop_up("You have to log in first!");
       navigate(`/login`);
     } else {
       navigate("/room_entrance");

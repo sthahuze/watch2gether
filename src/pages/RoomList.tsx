@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Container, ListGroup, Button } from "react-bootstrap";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
+import { error_pop_up } from "../api/pop_up";
 
 const server = "https://gruppe9.toni-barth.com";
 
@@ -19,16 +20,7 @@ function RoomList() {
         setList(roomNames);
       })
       .catch((error) => {
-        toast.error("Error uploading rooms" + error.message, {
-          position: "top-right",
-          autoClose: 1500,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: false,
-          progress: undefined,
-          theme: "colored",
-        });
+        error_pop_up("Error uploading rooms" + error.message);
         console.log(error);
       });
   }
