@@ -145,28 +145,53 @@ function Room() {
 
   return (
     <Container>
-      <div className="Header pt-3 pb-2">You are in room: {roomid}</div>
-      <button className="copy-button btn btn-success" onClick={copyRoomLink}>
-        <FaShare className="mr-2" /> Share
-      </button>
-      <Row>
-        <Col lg="9">
-          <div className="Video">
-            <div>
-              <CustomForm setYoutubeLink={setYoutubeLink} />
-              {youtubeLink === "Loading..." ? ( // Перевіряємо, чи URL відео готовий
-                <p>Loading video...</p> // Відображаємо заставку поки відео завантажується
-              ) : (
-                <Youtube youtubeLink={youtubeLink ?? ""} />
-              )}
-            </div>
-          </div>
+      <Row className="pt-1">
+        <Col lg={8}>
+          <Row className="mt-2 pb-4 pb-sm-2">
+            <Col
+              md="auto"
+              sm="5"
+              className="pt-md-3 pt-2 justify-content-center justify-content-sm-end d-flex"
+            >
+              <h4>You are in room: </h4>
+            </Col>
+            <Col
+              md="auto"
+              sm="7"
+              className="pt-md-3 pt-2 justify-content-center justify-content-sm-start d-flex"
+            >
+              <h4>{roomid}</h4>
+            </Col>
+            <Col className="col justify-content-lg-end justify-content-center d-flex pt-md-3 pt-sm-2 pt-2">
+              <button
+                className="copy-button btn btn-warning w-100"
+                style={{ maxWidth: "300px" }}
+                onClick={copyRoomLink}
+              >
+                <FaShare /> Share
+              </button>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              <div className="Video">
+                <div>
+                  <CustomForm setYoutubeLink={setYoutubeLink} />
+                  {youtubeLink === "Loading..." ? ( // Перевіряємо, чи URL відео готовий
+                    <p>Loading video...</p> // Відображаємо заставку поки відео завантажується
+                  ) : (
+                    <Youtube youtubeLink={youtubeLink ?? ""} />
+                  )}
+                </div>
+              </div>
+            </Col>
+          </Row>
+          <ToastContainer />
         </Col>
-        <Col>
+        <Col className="pt-1">
           <Chat />
         </Col>
       </Row>
-      <ToastContainer />
     </Container>
   );
 }

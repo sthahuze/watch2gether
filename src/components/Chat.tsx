@@ -22,6 +22,9 @@ interface User {
 var users: User[] = [];
 
 function Chat() {
+  const isScreen = window.matchMedia("(min-width: 992px)").matches;
+  const height = isScreen ? "80vh" : "60vh";
+
   const [messageText, setMessageText] = useState(""); // Стан для зберігання тексту повідомлення
   const [chatMessages, setChatMessages] = useState([]); // Стан для зберігання повідомлень
   const roomid = localStorage.getItem("roomid");
@@ -87,7 +90,7 @@ function Chat() {
       </Container>
       <div
         style={{
-          height: "500px",
+          height,
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-end",
