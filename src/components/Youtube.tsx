@@ -16,96 +16,88 @@ const Youtube: React.FC<YoutubeProps> = ({ youtubeLink }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const playerRef = useRef<ReactPlayer | null>(null);
 
-  function sendRequestToServer() {
+  async function sendRequestToServer() {
     if (isFunctionEnabled === true) {
-      axios
-        .get(`${server}/rooms/${roomid}/status`)
-        .then((response) => {
-          const status = response.data.status;
-          console.log(status, state);
-          if (status !== state) {
-            if (status === "playing") {
-              axios
-                .get(`${server}/rooms/${roomid}/position`)
-                .then((response) => {
-                  const { position } = response.data; // Отримайте позицію з відповіді
-                  console.log("Позиція відео:", position);
-                  if (isFunctionEnabled === true) {
-                    state = "playing";
-                    if (playerRef.current) {
-                      playerRef.current.seekTo(position);
-                      playerRef.current.getInternalPlayer().playVideo();
-                      setIsPlaying(true);
-                    }
-                  }
-                })
-                .catch((error) => {
-                  console.error("Error when getting position:", error);
-                });
-              console.log("video is set to play");
-            }
-            if (status === "paused") {
-              if (isFunctionEnabled === true) {
-                state = "paused";
-                if (playerRef.current) {
-                  playerRef.current.getInternalPlayer().pauseVideo();
-                  setIsPlaying(false);
-                }
-                console.log("video is set to paused");
+      try {
+        const response = await axios.get(`${server}/rooms/${roomid}/status`);
+        const status = response.data.status;
+        console.log(status, state);
+
+        if (status !== state) {
+          if (status === "playing") {
+            const responsePosition = await axios.get(
+              `${server}/rooms/${roomid}/position`
+            );
+            const position = responsePosition.data.position;
+
+            console.log("Позиція відео:", position);
+
+            if (isFunctionEnabled === true) {
+              state = "playing";
+
+              if (playerRef.current) {
+                playerRef.current.seekTo(position);
+                playerRef.current.getInternalPlayer().playVideo();
+                setIsPlaying(true);
               }
             }
           }
-        })
-        .catch((error) => {
-          console.error("Помилка при відправці запиту:", error);
-        });
+          if (status === "paused") {
+            if (isFunctionEnabled === true) {
+              state = "paused";
+
+              if (playerRef.current) {
+                playerRef.current.getInternalPlayer().pauseVideo();
+                setIsPlaying(false);
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Помилка при відправці запиту:", error);
+      }
     }
   }
 
-  function sendStatusToServer(status: string, position: number | null) {
-    axios
-      .put(`${server}/rooms/${roomid}/status`, {
+  async function sendStatusToServer(status: string, position: number | null) {
+    try {
+      await axios.put(`${server}/rooms/${roomid}/status`, {
         user: userid,
         status: status,
-      })
-      .then((response) => {
-        console.log(`Запит на ${status} надіслано`);
-      })
-      .catch((error) => {
-        console.error(`Помилка при відправці запиту на ${status}:`, error);
       });
 
-    if (position !== null) {
-      axios
-        .put(`${server}/rooms/${roomid}/position`, {
+      console.log(`Запит на ${status} надіслано`);
+
+      if (position !== null) {
+        await axios.put(`${server}/rooms/${roomid}/position`, {
           user: userid,
           position: position,
-        })
-        .then((response) => {
-          console.log("Запит на позицію надіслано");
-        })
-        .catch((error) => {
-          console.error("Помилка при відправці запиту на позицію:", error);
         });
+
+        console.log("Запит на позицію надіслано");
+      }
+
+      isFunctionEnabled = true;
+    } catch (error) {
+      console.error(`Помилка при відправці запиту на ${status}:`, error);
     }
-    isFunctionEnabled = true;
   }
 
-  const handlePlay = () => {
+  const handlePlay = async () => {
     isFunctionEnabled = false;
     state = "playing";
     const currentPosition = playerRef.current?.getCurrentTime() || 0;
     console.log("Відео почало відтворюватися");
 
-    sendStatusToServer("playing", currentPosition);
+    await sendStatusToServer("playing", currentPosition);
   };
 
-  const handlePause = () => {
+  const handlePause = async () => {
     isFunctionEnabled = false;
     state = "paused";
     console.log("Відео зупинилося");
 
-    sendStatusToServer("paused", null);
+    await sendStatusToServer("paused", null);
   };
 
   useEffect(() => {
