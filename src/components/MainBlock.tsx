@@ -2,7 +2,7 @@ import background from "./image/jvleergjp-rbvdis.jpg";
 import { Col, Button, Container, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { success_pop_up, error_pop_up } from "../api/pop_up";
 
@@ -13,7 +13,8 @@ function MainBlock() {
   const handleCreateRoom = () => {
     const username = localStorage.getItem("username");
     const userID = localStorage.getItem("userID");
-    if (username === "") {
+    if (username === "" || username === null) {
+      error_pop_up("You have to log in first!");
       navigate(`/login`);
     } else {
       axios

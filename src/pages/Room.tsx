@@ -115,10 +115,18 @@ function Room() {
   }, [navigate]);
 
   useEffect(() => {
+    const fetchDataAndHandleAsync = async () => {
+      try {
+        await youtube_link(setYoutubeLink, youtubeLink);
+        users = await user_change(users);
+      } catch (error) {
+        // Обробляйте помилки, якщо потрібно
+      }
+    };
+
     // Створюємо інтервал тільки після того, як компонент був змонтований
     const intervalId = setInterval(() => {
-      youtube_link(setYoutubeLink, youtubeLink);
-      users = user_change(users);
+      fetchDataAndHandleAsync();
     }, 3000);
 
     // При виході з компоненту видаляємо інтервал

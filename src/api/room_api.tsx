@@ -1,5 +1,5 @@
 import { success_pop_up, info_pop_up, error_pop_up } from "../api/pop_up";
-import axios from "axios";
+import axios, { all } from "axios";
 
 const server = "https://gruppe9.toni-barth.com";
 
@@ -75,45 +75,45 @@ export function youtube_link(setYoutubeLink: any, youtubeLink: any) {
     });
 }
 
-export function user_change(users: User[]): User[] {
-  console.log("new user check");
-  const roomid = localStorage.getItem("roomid");
-  console.log("new user check in " + roomid);
-  axios
-    .get(`${server}/rooms/${roomid}/users`)
-    .then((response) => {
-      console.log("got response");
-      // handle success
-      const all_users = response.data.users;
-      if (users.length === 0) {
-        users = all_users;
-      } else {
-        const comparisonResult = compareArrays(users, all_users);
+export async function user_change(users: User[]): Promise<User[]> {
+  try {
+    console.log("new user check");
+    const roomid = localStorage.getItem("roomid");
+    const response = await axios.get(`${server}/rooms/${roomid}/users`);
 
-        if (comparisonResult.equal !== true) {
-          if (comparisonResult.added.length > 0) {
-            // Робимо щось, коли є додані елементи
-            comparisonResult.added.forEach((addedItem) => {
-              console.log("User " + addedItem.name + " entered the room");
-              success_pop_up("User " + addedItem.name + " entered the room");
-            });
-          }
-          if (comparisonResult.removed.length > 0) {
-            // Робимо щось, коли є видалені елементи
-            comparisonResult.removed.forEach((removedItem) => {
-              console.log("User " + removedItem.name + " left the room");
-              info_pop_up("User " + removedItem.name + " left the room");
-            });
-          }
-          users = all_users;
-          return users; // Оновлюємо стан після отримання даних
+    // handle success
+    const all_users = response.data.users;
+
+    if (users.length === 0) {
+      console.log(all_users);
+      return all_users;
+    } else {
+      const comparisonResult = compareArrays(users, all_users);
+
+      if (comparisonResult.equal !== true) {
+        if (comparisonResult.added.length > 0) {
+          // Робимо щось, коли є додані елементи
+          comparisonResult.added.forEach((addedItem) => {
+            console.log("User " + addedItem.name + " entered the room");
+            success_pop_up("User " + addedItem.name + " entered the room");
+          });
         }
+        if (comparisonResult.removed.length > 0) {
+          // Робимо щось, коли є видалені елементи
+          comparisonResult.removed.forEach((removedItem) => {
+            console.log("User " + removedItem.name + " left the room");
+            info_pop_up("User " + removedItem.name + " left the room");
+          });
+        }
+        users = all_users;
+        console.log(users);
+        return users; // Оновлюємо стан після отримання даних
       }
-    })
-    .catch((error) => {
-      // handle error
-      console.log(error);
-    });
+    }
+  } catch (error) {
+    // handle error
+    console.log(error);
+  }
   return users;
 }
 
