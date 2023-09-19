@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from "react";
-import { Container } from "react-bootstrap";
-import { Input, TextMessage } from "react-chat-elements";
+import React, { useState, useEffect, useRef } from "react";
+import { Col, Container, Row } from "react-bootstrap";
 import axios from "axios";
 import styled from "styled-components";
 
 const server = "https://gruppe9.toni-barth.com";
 
 const ChatMessageContainer = styled.div`
-  border: 1px solid #ccc;
-  background-color: #f5f5f5;
-  border-radius: 5px;
+  border: none;
+  background-color: #ffffff;
+  border-radius: 15px;
   padding: 8px;
   margin: 4px;
+  word-wrap: break-word;
+  // max-width: 70%;
 `;
 
 interface User {
@@ -23,7 +24,7 @@ var users: User[] = [];
 
 function Chat() {
   const isScreen = window.matchMedia("(min-width: 992px)").matches;
-  const height = isScreen ? "80vh" : "60vh";
+  const height = isScreen ? "70vh" : "52vh";
 
   const [messageText, setMessageText] = useState(""); // Стан для зберігання тексту повідомлення
   const [chatMessages, setChatMessages] = useState([]); // Стан для зберігання повідомлень
@@ -84,74 +85,58 @@ function Chat() {
   }, [roomid]); // Видаліть chatMessages зі залежностей
 
   return (
-    <div style={{ backgroundColor: "#f5f5f5" }}>
-      <Container className="pt-3 pb-3">
-        <h3>Chat</h3>
-      </Container>
+    <Container
+      className="pt-4 mb-4 pb-4"
+      style={{ backgroundColor: "#f5f5f5" }}
+    >
+      <h3 className="text-center">Chat</h3>
+
+      {/* Вывод сообщений */}
       <div
+        className="messages pb-3 pt-3 mt-4"
         style={{
           height,
           display: "flex",
           flexDirection: "column",
           justifyContent: "flex-end",
-          marginBottom: "16px",
+          overflowY: "auto",
         }}
       >
-        {/* Вывод сообщений */}
-        <div
-          className="messages"
-          style={{
-            marginLeft: "10px",
-            marginRight: "10px",
-          }}
-        >
-          {chatMessages.map((message: any) => (
-            <div key={message.id}>
+        {chatMessages.map((message: any) => (
+          <div key={message.id}>
+            <ChatMessageContainer>
               <p>{getUsernameByUserId(message.userId)}</p>
-              <ChatMessageContainer>
-                <p>{message.text}</p>
-              </ChatMessageContainer>
-            </div>
-          ))}
-        </div>
-
-        <div
-          style={{
-            marginLeft: "10px",
-            marginRight: "10px",
-          }}
-        >
-          <Input
-            placeholder="Type here..."
-            multiline={true}
-            maxHeight={120}
-            inputStyle={{
-              width: "100%",
-              paddingLeft: "10px",
-              paddingRight: "10px",
-            }}
-            value={messageText} // Підключаємо значення зі стану до поля вводу
-            onChange={(e: any) => setMessageText(e.target.value)} // Обробник зміни тексту
-          />
-        </div>
-
-        <button
-          style={{
-            marginTop: "5px",
-            marginBottom: "10px",
-            marginLeft: "10px",
-            marginRight: "10px",
-            fontSize: "16px",
-            padding: "8px 8px",
-            backgroundColor: "green",
-            color: "white",
-          }}
-          onClick={handleSendMessage} // Прикріплюємо обробник натискання кнопки
-        >
-          Send
-        </button>
+              <p>{message.text}</p>
+            </ChatMessageContainer>
+          </div>
+        ))}
       </div>
-    </div>
+
+      <Row>
+        <Col md={9}>
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Type here..."
+            value={messageText}
+            onChange={(e: any) => setMessageText(e.target.value)}
+          />
+        </Col>
+
+        <Col md={3}>
+          <button
+            className="btn w-100"
+            style={{
+              backgroundColor: "#F3D748",
+              border: "none",
+            }}
+            onClick={handleSendMessage}
+          >
+            Send
+          </button>
+        </Col>
+      </Row>
+    </Container>
   );
 }
 
