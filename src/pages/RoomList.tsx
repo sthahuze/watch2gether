@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Container, ListGroup, Button } from "react-bootstrap";
+import { Container, ListGroup, Button, Row, Col } from "react-bootstrap";
 import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -30,15 +30,29 @@ function RoomList() {
   }, []);
 
   return (
-    <div>
-      <Container className="pt-4 pb-4">
-        <div className="d-flex justify-content-between align-items-center">
-          <h1 className="text-center pb-2">List of open rooms</h1>
-          <Button variant="info" onClick={update_room_list}>
-            <FontAwesomeIcon icon={faSync} className="mr-2" />
-            Update
-          </Button>
-        </div>
+    <div style={{ flex: 1 }}>
+      <Container className="pt-4 pb-3 ">
+        <Row>
+          <Col
+            sm="9"
+            className="justify-content-center justify-content-sm-start d-flex"
+          >
+            <h1>List of open rooms</h1>
+          </Col>
+          <Col sm="3" className="mt-2 mb-1 justify-content-end d-flex">
+            <Button
+              variant="info"
+              onClick={update_room_list}
+              className="w-100"
+              style={{ backgroundColor: "#F3D748", border: "none" }}
+            >
+              <FontAwesomeIcon icon={faSync} />
+              Update
+            </Button>
+          </Col>
+        </Row>
+      </Container>
+      <Container className="mb-5">
         <ListGroup>
           {list.map((item, index) => (
             <ListGroup.Item key={index}>{item}</ListGroup.Item>

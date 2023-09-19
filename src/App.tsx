@@ -12,19 +12,23 @@ import RoomList from "./pages/RoomList";
 
 function App() {
   return (
-    <Stack>
-      <NavBar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<LogInForm />} />
-        <Route path="/room_entrance" element={<RoomEntrance />} />
-        <Route path="/room/:roomid" element={<Room />} />
-        <Route path="/rooms" element={<RoomList />} />
-        <Route path="/error" element={<NotFound />} />
-        <Route path="/*" element={<NotFound />} />
-      </Routes>
-      <Footer />
-    </Stack>
+    <div
+      style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
+    >
+      <Stack>
+        <NavBar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<LogInForm />} />
+          <Route path="/room_entrance" element={<RoomEntrance />} />
+          <Route path="/room/:roomid" element={<Room />} />
+          <Route path="/rooms" element={<RoomList />} />
+          <Route path="/error" element={<NotFound />} />
+          <Route path="/*" element={<NotFound />} />
+        </Routes>
+        <Footer />
+      </Stack>
+    </div>
   );
 }
 

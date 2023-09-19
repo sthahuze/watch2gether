@@ -9,7 +9,7 @@ function Footer() {
         className="pt-3 text-center"
         style={{ backgroundColor: "#f9e15d" }}
       >
-        <Row className="justify-content-md-center">
+        <Row className="justify-content-md-center ">
           <Col lg="10">
             <h5>
               Hochschule Anhalt. Modul Web- und Medienprogrammierung <br />

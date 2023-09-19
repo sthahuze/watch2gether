@@ -164,8 +164,12 @@ function Room() {
             </Col>
             <Col className="col justify-content-lg-end justify-content-center d-flex pt-md-3 pt-sm-2 pt-2">
               <button
-                className="copy-button btn btn-warning w-100"
-                style={{ maxWidth: "300px" }}
+                className="copy-button btn w-100"
+                style={{
+                  backgroundColor: "#F3D748",
+                  border: "none",
+                  maxWidth: "300px",
+                }}
                 onClick={copyRoomLink}
               >
                 <FaShare /> Share
