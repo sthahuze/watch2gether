@@ -8,6 +8,7 @@ import Chat from "../components/Chat";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ClipboardJS from "clipboard";
+import { FaShare } from "react-icons/fa";
 import {
   youtube_link,
   user_change,
@@ -15,7 +16,7 @@ import {
   room_existance,
   user_in_room,
 } from "../api/room_api";
-import { error_pop_up } from "../api/pop_up";
+import { error_pop_up, success_pop_up } from "../api/pop_up";
 import { enter_room } from "../api/enter_room";
 
 interface User {
@@ -28,6 +29,7 @@ var users: User[] = [];
 function Room() {
   const navigate = useNavigate();
   const [youtubeLink, setYoutubeLink] = useState<string | null>("");
+  var currentYoutubeLink: string | null = "";
   const [roomid, setRoomId] = useState<string>(""); // Використовуємо стан для збереження roomid
   var room = "";
   var FetchState = false;
@@ -119,6 +121,12 @@ function Room() {
       try {
         await youtube_link(setYoutubeLink, youtubeLink);
         users = await user_change(users);
+
+        // Оновлюємо currentYoutubeLink лише якщо youtubeLink змінилося
+        if (youtubeLink !== currentYoutubeLink) {
+          currentYoutubeLink = youtubeLink;
+          success_pop_up("New Video!");
+        }
       } catch (error) {
         // Обробляйте помилки, якщо потрібно
       }
@@ -127,7 +135,7 @@ function Room() {
     // Створюємо інтервал тільки після того, як компонент був змонтований
     const intervalId = setInterval(() => {
       fetchDataAndHandleAsync();
-    }, 3000);
+    }, 2500);
 
     // При виході з компоненту видаляємо інтервал
     return () => {
@@ -139,7 +147,7 @@ function Room() {
     <Container>
       <div className="Header pt-3 pb-2">You are in room: {roomid}</div>
       <button className="copy-button btn btn-success" onClick={copyRoomLink}>
-        Copy Link
+        <FaShare className="mr-2" /> Share
       </button>
       <Row>
         <Col lg="9">

@@ -2,8 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Container } from "react-bootstrap";
 import { Input, TextMessage } from "react-chat-elements";
 import axios from "axios";
+import styled from "styled-components";
 
 const server = "https://gruppe9.toni-barth.com";
+
+const ChatMessageContainer = styled.div`
+  border: 1px solid #ccc;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+  padding: 8px;
+  margin: 4px;
+`;
 
 interface User {
   id: number;
@@ -96,7 +105,9 @@ function Chat() {
           {chatMessages.map((message: any) => (
             <div key={message.id}>
               <p>{getUsernameByUserId(message.userId)}</p>
-              <p>{message.text}</p>
+              <ChatMessageContainer>
+                <p>{message.text}</p>
+              </ChatMessageContainer>
             </div>
           ))}
         </div>
