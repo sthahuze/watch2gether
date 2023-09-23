@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import axios from "axios";
 import styled from "styled-components";
+import { info_pop_up } from "../api/pop_up";
 
 const server = "https://gruppe9.toni-barth.com";
 
@@ -30,6 +31,8 @@ function Chat() {
   const [chatMessages, setChatMessages] = useState([]); // Стан для зберігання повідомлень
   const roomid = localStorage.getItem("roomid");
   const userid = localStorage.getItem("userID");
+
+  const [previousMessageCount, setPreviousMessageCount] = useState(0);
 
   function getUsernameByUserId(userId: number) {
     const user = users.find((user) => user.id === userId);
@@ -63,6 +66,14 @@ function Chat() {
         .then((response) => {
           const messages = response.data.messages;
           setChatMessages(messages);
+
+          // Проверка, есть ли новые сообщения
+          if (messages.length > previousMessageCount) {
+            info_pop_up("New message in chat!"); // Вызываем поп-ап только если есть новые входящие сообщения
+          }
+
+          // Обновляем состояние с предыдущим количеством сообщений
+          setPreviousMessageCount(messages.length);
         })
         .catch((error) => {
           console.error("Помилка отримання повідомлень:", error);
@@ -82,7 +93,7 @@ function Chat() {
     return () => {
       clearInterval(intervalId);
     };
-  }, [roomid]); // Видаліть chatMessages зі залежностей
+  }, [roomid, previousMessageCount]); // Видаліть chatMessages зі залежностей
 
   return (
     <Container
