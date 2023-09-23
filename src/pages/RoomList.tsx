@@ -53,12 +53,14 @@ function RoomList() {
         </Row>
       </Container>
       <Container className="mb-5">
-        <ListGroup>
-          {list.map((item, index) => (
-            <ListGroup.Item key={index}>{item}</ListGroup.Item>
-          ))}
-        </ListGroup>
-      </Container>
+  <ListGroup>
+    {list.map((item, index) => (
+      <ListGroup.Item key={index}>
+        {item.length > 5 ? item.slice(0, 5) + "*****" : item}
+      </ListGroup.Item>
+    ))}
+  </ListGroup>
+</Container>
       <ToastContainer />
     </div>
   );
