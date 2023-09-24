@@ -9,6 +9,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ClipboardJS from "clipboard";
 import { FaShare } from "react-icons/fa";
+import LoadingSpinner from "../components/LoadingSpinner";
 import {
   youtube_link,
   user_change,
@@ -19,23 +20,26 @@ import {
 import { error_pop_up, success_pop_up } from "../api/pop_up";
 import { enter_room } from "../api/enter_room";
 
-interface User {
-  id: number;
-  name: string;
-}
-
-var users: User[] = [];
-
 function Room() {
   const navigate = useNavigate();
   const [youtubeLink, setYoutubeLink] = useState<string | null>("");
   var currentYoutubeLink: string | null = "";
   const [roomid, setRoomId] = useState<string>(""); // Використовуємо стан для збереження roomid
+  const [isLoading, setIsLoading] = useState(true);
   var room = "";
   var FetchState = false;
   const userid = localStorage.getItem("userID");
 
+  interface User {
+    
+    id: number;
+    name: string;
+  }
+
+  var users: User[] = [];
+
   const fetchData = async () => {
+    setIsLoading(true);
     FetchState = true;
     // Розбийте URL на частини за допомогою регулярного виразу
     const parts = window.location.href.split("/room/");
@@ -46,29 +50,33 @@ function Room() {
       console.log("roomid valid" + room);
     } else {
       localStorage.removeItem("roomid");
+      setIsLoading(false);
+      localStorage.removeItem("tmpURL");
       navigate("/error");
     }
 
     localStorage.removeItem("tmpURL");
     try {
-      // Перевірка, чи користувач увійшов у систему
-      if (userid === "" || userid === null) {
-        // Якщо користувач не увійшов у систему, викликаємо помилку та зберігаємо URL
-        error_pop_up("You have to log in first!");
-        localStorage.setItem("tmpURL", `/room/${room}`);
+      const roomE = await room_existance(room);
 
-        // Перенаправляємо користувача на сторінку логіну
-        navigate("/login");
+      if (roomE === false) {
+        localStorage.removeItem("roomid");
+        error_pop_up("Room does not exist");
+        setIsLoading(false);
+        navigate("/");
       } else {
-        setRoomId(room);
-        try {
-          const roomE = await room_existance(room);
+        // Перевірка, чи користувач увійшов у систему
+        if (userid === "" || userid === null) {
+          // Якщо користувач не увійшов у систему, викликаємо помилку та зберігаємо URL
+          error_pop_up("You have to log in first!");
+          localStorage.setItem("tmpURL", `/room/${room}`);
 
-          if (roomE === false) {
-            localStorage.removeItem("roomid");
-            error_pop_up("Room does not exist");
-            navigate("/");
-          } else {
+          // Перенаправляємо користувача на сторінку логіну
+          setIsLoading(false);
+          navigate("/login");
+        } else {
+          setRoomId(room);
+          try {
             const user = await user_in_room(room);
 
             if (user === false) {
@@ -77,17 +85,22 @@ function Room() {
 
               if (entrance === false) {
                 localStorage.removeItem("roomid");
+                setIsLoading(false);
                 navigate("/error");
               }
             }
+          } catch (error) {
+            setIsLoading(false);
+            console.error(error);
           }
-        } catch (error) {
-          console.error(error);
         }
       }
     } catch (error) {
+      setIsLoading(false);
       console.error(error);
     }
+
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -144,30 +157,39 @@ function Room() {
   }, [youtubeLink]);
 
   return (
-    <Container>
-      <div className="Header pt-3 pb-2">You are in room: {roomid}</div>
-      <button className="copy-button btn btn-success" onClick={copyRoomLink}>
-        <FaShare className="mr-2" /> Share
-      </button>
-      <Row>
-        <Col lg="9">
-          <div className="Video">
-            <div>
-              <CustomForm setYoutubeLink={setYoutubeLink} />
-              {youtubeLink === "Loading..." ? ( // Перевіряємо, чи URL відео готовий
-                <p>Loading video...</p> // Відображаємо заставку поки відео завантажується
-              ) : (
-                <Youtube youtubeLink={youtubeLink ?? ""} />
-              )}
-            </div>
-          </div>
-        </Col>
-        <Col>
-          <Chat />
-        </Col>
-      </Row>
+    <div>
+      {isLoading ? (
+        <LoadingSpinner /> // Відобразиться, поки сторінка завантажується
+      ) : (
+        <Container>
+          <div className="Header pt-3 pb-2">You are in room: {roomid}</div>
+          <button
+            className="copy-button btn btn-success"
+            onClick={copyRoomLink}
+          >
+            <FaShare className="mr-2" /> Share
+          </button>
+          <Row>
+            <Col lg="9">
+              <div className="Video">
+                <div>
+                  <CustomForm setYoutubeLink={setYoutubeLink} />
+                  {youtubeLink === "Loading..." ? ( // Перевіряємо, чи URL відео готовий
+                    <p>Loading video...</p> // Відображаємо заставку поки відео завантажується
+                  ) : (
+                    <Youtube youtubeLink={youtubeLink ?? ""} />
+                  )}
+                </div>
+              </div>
+            </Col>
+            <Col>
+              <Chat />
+            </Col>
+          </Row>
+        </Container>
+      )}
       <ToastContainer />
-    </Container>
+    </div>
   );
 }
 

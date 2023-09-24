@@ -85,7 +85,6 @@ export async function user_change(users: User[]): Promise<User[]> {
     const all_users = response.data.users;
 
     if (users.length === 0) {
-      console.log(all_users);
       return all_users;
     } else {
       const comparisonResult = compareArrays(users, all_users);
