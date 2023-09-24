@@ -151,6 +151,7 @@ function Room() {
 
     // При виході з компоненту видаляємо інтервал
     return () => {
+      users = [];
       clearInterval(intervalId);
     };
   }, [youtubeLink]);

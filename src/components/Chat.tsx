@@ -9,11 +9,20 @@ const server = "https://gruppe9.toni-barth.com";
 const ChatMessageContainer = styled.div`
   border: none;
   background-color: #ffffff;
-  border-radius: 15px;
-  padding: 8px;
-  margin: 4px;
+  border-radius: 10px;
+  padding: 5px;
+  margin: 2px;
   word-wrap: break-word;
-  // max-width: 70%;
+
+  h6 {
+    margin: 1px 0;
+    font-size: 14px; /* Зменшуємо розмір шрифту */
+    color: #f85e00; /* Змінюємо колір тексту на сірий */
+  }
+
+  p {
+    margin: 1px 0;
+  }
 `;
 
 interface User {
@@ -104,7 +113,7 @@ function Chat() {
 
       {/* Вывод сообщений */}
       <div
-        className="messages pb-3 pt-3 mt-4"
+        className="messages pb-2 pt-3 mt-4"
         style={{
           height,
           display: "flex",
@@ -116,7 +125,7 @@ function Chat() {
         {chatMessages.map((message: any) => (
           <div key={message.id}>
             <ChatMessageContainer>
-              <p>{getUsernameByUserId(message.userId)}</p>
+              <h6>{getUsernameByUserId(message.userId)}</h6>
               <p>{message.text}</p>
             </ChatMessageContainer>
           </div>

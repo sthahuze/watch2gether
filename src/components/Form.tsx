@@ -44,7 +44,11 @@ export const CustomForm = ({ setYoutubeLink }: any) => {
           />
         </Col>
         <Col className="col mt-2">
-          <button type="submit" className="btn btn-success btn-md w-100">
+          <button
+            type="submit"
+            className="btn  btn-md w-100"
+            style={{ backgroundColor: "#F3D748" }}
+          >
             Submit
           </button>
         </Col>
