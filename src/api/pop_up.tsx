@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 
-export function success_pop_up(message: any) {
+export function success_pop_up(message: string) {
   toast.success(message, {
     position: "top-right",
     autoClose: 1500,
@@ -13,7 +13,7 @@ export function success_pop_up(message: any) {
   });
 }
 
-export function info_pop_up(message: any) {
+export function info_pop_up(message: string) {
   toast(message, {
     position: "top-right",
     autoClose: 1500,
@@ -26,7 +26,7 @@ export function info_pop_up(message: any) {
   });
 }
 
-export function error_pop_up(message: any) {
+export function error_pop_up(message: string) {
   toast.error(message, {
     position: "top-right",
     autoClose: 1500,

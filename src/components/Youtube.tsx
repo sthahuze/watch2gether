@@ -93,6 +93,12 @@ const Youtube: React.FC<YoutubeProps> = ({ youtubeLink }) => {
   };
 
   const handlePause = async () => {
+    state = "paused";
+    setTimeout(() => {
+      if (state === "playing") {
+        return;
+      }
+    }, 50);
     isFunctionEnabled = false;
     state = "paused";
     console.log("Відео зупинилося");
@@ -101,7 +107,7 @@ const Youtube: React.FC<YoutubeProps> = ({ youtubeLink }) => {
   };
 
   useEffect(() => {
-    const intervalId = setInterval(sendRequestToServer, 1000);
+    const intervalId = setInterval(sendRequestToServer, 920);
     return () => {
       clearInterval(intervalId);
     };

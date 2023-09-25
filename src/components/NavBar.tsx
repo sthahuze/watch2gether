@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { Container, Nav, Navbar, Dropdown } from "react-bootstrap";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -17,7 +18,9 @@ function Navigation() {
   const navigate = useNavigate();
   const { isAuthenticated, username } = useAuth();
 
-  const handleLogout = () => {
+  const handleLogout = async (e: any) => {
+    // Додайте `async` тут
+    e.preventDefault();
     //delete username from browser
     localStorage.removeItem("username");
 
@@ -25,65 +28,63 @@ function Navigation() {
     //delete userID from browser
     localStorage.removeItem("userID");
     localStorage.removeItem("roomid");
-    //send HttpDelete request to server
-    axios
-      .delete(`${server}/users/${userIdToDelete}`)
-      .then((response) => {
-        if (response.status === 200) {
-          console.log("User was successfully deleted");
-          //pop up
-          success_pop_up("User was successfully logged out");
-        } else {
-          console.error("Error when deleting user", response.status);
-          //pop up server error
-          error_pop_up("Error when deleting user::" + response.status);
-        }
-      })
-      .catch((error) => {
-        //pop up another error
-        error_pop_up("Error when deleting user" + error.message);
-      });
+
+    try {
+      const response = await axios.delete(`${server}/users/${userIdToDelete}`);
+      if (response.status === 200) {
+        //pop up
+        success_pop_up("User was successfully logged out");
+      } else {
+        console.error("Error when deleting user", response.status);
+        //pop up server error
+        error_pop_up("Error when deleting user::" + response.status);
+      }
+    } catch (error) {
+      //pop up another error
+      error_pop_up("Error when deleting user");
+    }
     navigate("/");
   };
 
-  const handleCreateRoom = () => {
+  const handleCreateRoom = async (e: any) => {
+    e.preventDefault();
     const username = localStorage.getItem("username");
     const userID = localStorage.getItem("userID");
     console.log(username);
 
-    axios
-      .post(`${server}/rooms/`)
-      .then((response) => {
-        if (response.status === 201) {
-          const roomid = response.data.name;
-          // localStorage.setItem("roomid", roomid);
+    try {
+      const response = await axios.post(`${server}/rooms/`);
+      if (response.status === 201) {
+        const roomid = response.data.name;
+        // localStorage.setItem("roomid", roomid);
+
+        if (userID === "" || userID === null) {
           localStorage.setItem("tmpURL", `/room/${roomid}`);
-          if (userID === "" || userID === null) {
-            error_pop_up("You have to log in first!");
-            navigate("/login");
-          } else {
-            axios
-              .put(`${server}/rooms/${roomid}/users`, { user: userID })
-              .then((response) => {
-                if (response.status === 200) {
-                  success_pop_up("You successfully entered the Room");
-                  navigate(`/room/${roomid}`);
-                } else {
-                  error_pop_up("Error " + response.status);
-                }
-              })
-              .catch((error) => {
-                error_pop_up("Error " + error.message);
-              });
-          }
+          error_pop_up("You have to log in first!");
+          navigate("/login");
         } else {
-          //error pop up response.status
-          error_pop_up("Error " + response.status);
+          try {
+            const userResponse = await axios.put(
+              `${server}/rooms/${roomid}/users`,
+              { user: userID }
+            );
+            if (userResponse.status === 200) {
+              success_pop_up("You successfully created and entered the Room");
+              navigate(`/room/${roomid}`);
+            } else {
+              error_pop_up("Error " + userResponse.status);
+            }
+          } catch (error) {
+            error_pop_up("Error ");
+          }
         }
-      })
-      .catch((error) => {
-        error_pop_up("Error " + error.message);
-      });
+      } else {
+        //error pop up response.status
+        error_pop_up("Error " + response.status);
+      }
+    } catch (error) {
+      error_pop_up("Error ");
+    }
   };
 
   const handleEnterTheRoom = () => {

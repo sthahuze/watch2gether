@@ -11,7 +11,6 @@ export async function enter_room(roomid: any, userID: any): Promise<boolean> {
 
     if (response.status === 200) {
       success_pop_up("You successfully entered the Room");
-      //localStorage.setItem("roomid", roomid);
       return true;
     } else {
       error_pop_up("Error " + response.status);
