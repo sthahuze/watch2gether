@@ -41,7 +41,7 @@
 
       var l = window.location;
 
-      if (!l.search.includes("?p=")) {
+      if (!l.search.includes("?p==")) {
         // Only redirect if ?p= is not in the query string
         l.replace(
           l.protocol +
@@ -52,7 +52,7 @@
               .split("/")
               .slice(0, 1 + segmentCount)
               .join("/") +
-            "/?p=" +
+            "/?p==" +
             l.pathname
               .slice(1)
               .split("/")
