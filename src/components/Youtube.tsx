@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import ReactPlayer from "react-player";
 import axios from "axios";
+import { info_pop_up } from "../api/pop_up";
 
 const server = "https://gruppe9.toni-barth.com";
 var state = "";
@@ -88,7 +89,7 @@ const Youtube: React.FC<YoutubeProps> = ({ youtubeLink }) => {
     state = "playing";
     const currentPosition = playerRef.current?.getCurrentTime() || 0;
     console.log("Відео почало відтворюватися");
-
+    info_pop_up("Video started");
     await sendStatusToServer("playing", currentPosition);
   };
 
@@ -98,11 +99,11 @@ const Youtube: React.FC<YoutubeProps> = ({ youtubeLink }) => {
       if (state === "playing") {
         return;
       }
-    }, 50);
+    }, 100);
     isFunctionEnabled = false;
     state = "paused";
     console.log("Відео зупинилося");
-
+    info_pop_up("Video paused");
     await sendStatusToServer("paused", null);
   };
 

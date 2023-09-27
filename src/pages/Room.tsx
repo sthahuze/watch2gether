@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { CustomForm } from "../components/Form";
 import Youtube from "../components/Youtube";
 import Container from "react-bootstrap/Container";
-import { Col, Row } from "react-bootstrap";
+import { Button, Col, Row } from "react-bootstrap";
 import Chat from "../components/Chat";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,12 +17,12 @@ import {
   room_existance,
   user_in_room,
 } from "../api/room_api";
-import { error_pop_up, success_pop_up } from "../api/pop_up";
+import { error_pop_up, info_pop_up, success_pop_up } from "../api/pop_up";
 import { enter_room } from "../api/enter_room";
 
 function Room() {
   const navigate = useNavigate();
-  const [youtubeLink, setYoutubeLink] = useState<string | null>("");
+  const [youtubeLink, setYoutubeLink] = useState<string>("");
   var currentYoutubeLink: string | null = "";
   const [roomid, setRoomId] = useState<string>(""); // Використовуємо стан для збереження roomid
   const [isLoading, setIsLoading] = useState(true);
@@ -137,7 +137,7 @@ function Room() {
         // Оновлюємо currentYoutubeLink лише якщо youtubeLink змінилося
         if (youtubeLink !== currentYoutubeLink) {
           currentYoutubeLink = youtubeLink;
-          success_pop_up("New Video!");
+          info_pop_up("New Video!");
         }
       } catch (error) {
         // Обробляйте помилки, якщо потрібно
@@ -155,6 +155,13 @@ function Room() {
       clearInterval(intervalId);
     };
   }, [youtubeLink]);
+
+  const [isActive, setIsActive] = useState(false);
+
+  const handleButtonClick = () => {
+    copyRoomLink(); // Копирование ссылки в буфер обмена
+    success_pop_up("Link is copied to clipboard"); // Отображение уведомления
+  };
 
   return (
     <div>
@@ -180,30 +187,32 @@ function Room() {
                   <h4>{roomid}</h4>
                 </Col>
                 <Col className="col justify-content-lg-end justify-content-center d-flex pt-md-3 pt-sm-2 pt-2">
-                  <button
+                  <Button
                     className="copy-button btn w-100"
                     style={{
-                      backgroundColor: "#F3D748",
+                      backgroundColor: isActive ? "#FFEA99" : "#F3D748",
+                      transition: "background-color 0.1s ease",
+                      color: "black",
                       border: "none",
                       maxWidth: "300px",
                     }}
-                    onClick={copyRoomLink}
+                    onMouseDown={() => setIsActive(true)}
+                    onMouseUp={() => setIsActive(false)}
+                    onClick={handleButtonClick}
                   >
                     <FaShare /> Share
-                  </button>
+                  </Button>
                 </Col>
               </Row>
               <Row>
                 <Col>
                   <div className="Video">
-                    <div>
-                      <CustomForm setYoutubeLink={setYoutubeLink} />
-                      {youtubeLink === "Loading..." ? ( // Перевіряємо, чи URL відео готовий
-                        <p>Loading video...</p> // Відображаємо заставку поки відео завантажується
-                      ) : (
-                        <Youtube youtubeLink={youtubeLink ?? ""} />
-                      )}
-                    </div>
+                    <CustomForm setYoutubeLink={setYoutubeLink} />
+                    {youtubeLink === "Loading..." ? ( // Перевіряємо, чи URL відео готовий
+                      <p>Loading video...</p> // Відображаємо заставку поки відео завантажується
+                    ) : (
+                      <Youtube youtubeLink={youtubeLink ?? ""} />
+                    )}
                   </div>
                 </Col>
               </Row>

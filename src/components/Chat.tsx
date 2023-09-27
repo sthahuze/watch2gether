@@ -40,8 +40,8 @@ function Chat() {
   const [chatMessages, setChatMessages] = useState([]); // Стан для зберігання повідомлень
   const roomid = localStorage.getItem("roomid");
   const userid = localStorage.getItem("userID");
-
-  const [previousMessageCount, setPreviousMessageCount] = useState(0);
+  const [initialRequestCompleted, setInitialRequestCompleted] = useState(false);
+  const [previousMessageCount, setPreviousMessageCount] = useState([]);
 
   function getUsernameByUserId(userId: number) {
     const user = users.find((user) => user.id === userId);
@@ -68,6 +68,25 @@ function Chat() {
   };
 
   useEffect(() => {
+    if (!initialRequestCompleted) {
+      // Выполните первый запрос только если он ещё не был выполнен
+      axios
+        .get(`${server}/rooms/${roomid}/chat`)
+        .then((response) => {
+          const messages = response.data.messages;
+          setChatMessages(messages);
+
+          // Установите начальное значение previousMessageCount
+          setPreviousMessageCount(messages.length);
+
+          // Установите флаг, что первый запрос выполнен
+          setInitialRequestCompleted(true);
+        })
+        .catch((error) => {
+          console.error("Помилка отримання повідомлень:", error);
+        });
+    }
+
     const intervalId = setInterval(() => {
       // Відправка GET-запиту для отримання повідомлень
       axios
@@ -76,13 +95,19 @@ function Chat() {
           const messages = response.data.messages;
           setChatMessages(messages);
 
+          const filteredMessages = messages.filter(
+            (message: { userId: string }) => {
+              return message.userId != userid;
+            }
+          );
+
           // Проверка, есть ли новые сообщения
-          if (messages.length > previousMessageCount) {
+          if (filteredMessages.length > previousMessageCount) {
             info_pop_up("New message in chat!"); // Вызываем поп-ап только если есть новые входящие сообщения
           }
 
           // Обновляем состояние с предыдущим количеством сообщений
-          setPreviousMessageCount(messages.length);
+          setPreviousMessageCount(filteredMessages.length);
         })
         .catch((error) => {
           console.error("Помилка отримання повідомлень:", error);
@@ -102,7 +127,9 @@ function Chat() {
     return () => {
       clearInterval(intervalId);
     };
-  }, [roomid, previousMessageCount]); // Видаліть chatMessages зі залежностей
+  }, [roomid, initialRequestCompleted, previousMessageCount]); // Видаліть chatMessages зі залежностей
+
+  const [isActive, setIsActive] = useState(false);
 
   return (
     <Container
@@ -147,9 +174,12 @@ function Chat() {
           <button
             className="btn w-100"
             style={{
-              backgroundColor: "#F3D748",
+              backgroundColor: isActive ? "#FFEA99" : "#F3D748",
+              transition: "background-color 0.1s ease",
               border: "none",
             }}
+            onMouseDown={() => setIsActive(true)}
+            onMouseUp={() => setIsActive(false)}
             onClick={handleSendMessage}
           >
             Send
