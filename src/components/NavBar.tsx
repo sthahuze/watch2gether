@@ -98,6 +98,11 @@ function Navigation() {
     }
   };
 
+  const handleUserRooms = () => {
+    const userid = localStorage.getItem("userID");
+    navigate("/user_rooms");
+  };
+
   return (
     <Navbar bg="dark" data-bs-theme="dark" expand="md" sticky="top">
       <Container>
@@ -123,6 +128,9 @@ function Navigation() {
                 <Dropdown.Menu>
                   <Dropdown.Item>
                     UserID {localStorage.getItem("userID")}
+                  </Dropdown.Item>
+                  <Dropdown.Item onClick={handleUserRooms}>
+                    My Rooms
                   </Dropdown.Item>
                   <Dropdown.Item onClick={handleLogout}>Log out</Dropdown.Item>
                 </Dropdown.Menu>

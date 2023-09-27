@@ -9,6 +9,7 @@ import LogInForm from "./pages/LogIn";
 import Room from "./pages/Room";
 import RoomEntrance from "./pages/RoomEntrance";
 import RoomList from "./pages/RoomList";
+import UserRooms from "./pages/UserRooms";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/room_entrance" element={<RoomEntrance />} />
           <Route path="/room/:roomid" element={<Room />} />
           <Route path="/rooms" element={<RoomList />} />
+          <Route path="/user_rooms" element={<UserRooms />} />
           <Route path="/error" element={<NotFound />} />
           <Route path="/*" element={<NotFound />} />
         </Routes>
