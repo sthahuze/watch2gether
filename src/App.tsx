@@ -9,6 +9,7 @@ import LogInForm from "./pages/LogIn";
 import Room from "./pages/Room";
 import RoomEntrance from "./pages/RoomEntrance";
 import RoomList from "./pages/RoomList";
+import ReactDOM from "react-dom";
 
 function App() {
   return (
