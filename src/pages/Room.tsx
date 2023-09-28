@@ -1,41 +1,41 @@
-import { useEffect, useState } from "react";  // Importing React hooks for managing state and side effects
-import { useNavigate } from "react-router-dom";  // Importing routing functionality
-import { CustomForm } from "../components/Form";  // Importing a custom form component
-import Youtube from "../components/Youtube";  // Importing a custom YouTube component
-import Container from "react-bootstrap/Container";  // Importing a Bootstrap container component
-import { Button, Col, Row } from "react-bootstrap";  // Importing Bootstrap UI components
-import Chat from "../components/Chat";  // Importing a custom chat component
-import { ToastContainer } from "react-toastify";  // Importing a notification component
-import "react-toastify/dist/ReactToastify.css";  // Importing styles for notifications
-import ClipboardJS from "clipboard";  // Importing ClipboardJS library for clipboard functionality
-import { FaShare } from "react-icons/fa";  // Importing a share icon from React Icons library
-import LoadingSpinner from "../components/LoadingSpinner";  // Importing a custom loading spinner component
+import { useEffect, useState } from "react"; // Importing React hooks for managing state and side effects
+import { useNavigate } from "react-router-dom"; // Importing routing functionality
+import { CustomForm } from "../components/Form"; // Importing a custom form component
+import Youtube from "../components/Youtube"; // Importing a custom YouTube component
+import Container from "react-bootstrap/Container"; // Importing a Bootstrap container component
+import { Button, Col, Row } from "react-bootstrap"; // Importing Bootstrap UI components
+import Chat from "../components/Chat"; // Importing a custom chat component
+import { ToastContainer } from "react-toastify"; // Importing a notification component
+import "react-toastify/dist/ReactToastify.css"; // Importing styles for notifications
+import ClipboardJS from "clipboard"; // Importing ClipboardJS library for clipboard functionality
+import { FaShare } from "react-icons/fa"; // Importing a share icon from React Icons library
+import LoadingSpinner from "../components/LoadingSpinner"; // Importing a custom loading spinner component
 import {
   youtube_link,
   user_change,
   copyRoomLink,
   room_existance,
   user_in_room,
-} from "../api/room_api";  // Importing various functions from API files
-import { error_pop_up, info_pop_up, success_pop_up } from "../api/pop_up";  // Importing functions for displaying pop-up notifications
-import { enter_room } from "../api/enter_room";  // Importing a function for entering a room
+} from "../api/room_api"; // Importing various functions from API files
+import { error_pop_up, info_pop_up, success_pop_up } from "../api/pop_up"; // Importing functions for displaying pop-up notifications
+import { enter_room } from "../api/enter_room"; // Importing a function for entering a room
 
 function Room() {
-  const navigate = useNavigate();  // Initialize navigation function
-  const [youtubeLink, setYoutubeLink] = useState<string>("");  // State for storing YouTube video link
+  const navigate = useNavigate(); // Initialize navigation function
+  const [youtubeLink, setYoutubeLink] = useState<string>(""); // State for storing YouTube video link
   var currentYoutubeLink: string | null = "";
-  const [roomid, setRoomId] = useState<string>("");  // State for storing the room ID
-  const [isLoading, setIsLoading] = useState(true);  // State for loading indicator
+  const [roomid, setRoomId] = useState<string>(""); // State for storing the room ID
+  const [isLoading, setIsLoading] = useState(true); // State for loading indicator
   var room = "";
   var FetchState = false;
-  const userid = localStorage.getItem("userID");  // Get the user ID from local storage
+  const userid = localStorage.getItem("userID"); // Get the user ID from local storage
 
   interface User {
     id: number;
     name: string;
   }
 
-  var users: User[] = [];  // Initialize an array for storing user data
+  var users: User[] = []; // Initialize an array for storing user data
 
   // Function to fetch room data and perform necessary checks
   const fetchData = async () => {
@@ -46,24 +46,24 @@ function Room() {
     if (parts.length === 2) {
       room = parts[1];
 
-      localStorage.setItem("roomid", room);  // Store the room ID in local storage
+      localStorage.setItem("roomid", room); // Store the room ID in local storage
       console.log("roomid valid" + room);
     } else {
       localStorage.removeItem("roomid");
       setIsLoading(false);
       localStorage.removeItem("tmpURL");
-      navigate("/error");  // Redirect to an error page
+      navigate("/error"); // Redirect to an error page
     }
 
     localStorage.removeItem("tmpURL");
     try {
-      const roomE = await room_existance(room);  // Check if the room exists
+      const roomE = await room_existance(room); // Check if the room exists
 
       if (roomE === false) {
         localStorage.removeItem("roomid");
-        error_pop_up("Room does not exist");  // Display an error notification
+        error_pop_up("Room does not exist"); // Display an error notification
         setIsLoading(false);
-        navigate("/");  // Redirect to the home page
+        navigate("/"); // Redirect to the home page
       } else {
         // Check if the user is logged in
         if (userid === "" || userid === null) {
@@ -109,10 +109,10 @@ function Room() {
       fetchData();
     }
 
-    const clipboard = new ClipboardJS(".copy-button");  // Initialize ClipboardJS for copying room link
+    const clipboard = new ClipboardJS(".copy-button"); // Initialize ClipboardJS for copying room link
 
     return () => {
-      clipboard.destroy();  // Cleanup ClipboardJS on component unmount
+      clipboard.destroy(); // Cleanup ClipboardJS on component unmount
     };
   }, [FetchState]);
 
@@ -141,7 +141,7 @@ function Room() {
         // Update currentYouTubeLink only if youtubeLink has changed
         if (youtubeLink !== currentYoutubeLink) {
           currentYoutubeLink = youtubeLink;
-          info_pop_up("New Video!");  // Display an info notification for a new video
+          info_pop_up("New Video!"); // Display an info notification for a new video
         }
       } catch (error) {
         // Handle errors if needed
@@ -193,16 +193,8 @@ function Room() {
                 </Col>
                 <Col className="col justify-content-lg-end justify-content-center d-flex pt-md-3 pt-sm-2 pt-2">
                   <Button
+                    variant="warning"
                     className="copy-button btn w-100"
-                    style={{
-                      backgroundColor: isActive ? "#FFEA99" : "#F3D748",
-                      transition: "background-color 0.1s ease",
-                      color: "black",
-                      border: "none",
-                      maxWidth: "300px",
-                    }}
-                    onMouseDown={() => setIsActive(true)}
-                    onMouseUp={() => setIsActive(false)}
                     onClick={handleButtonClick}
                   >
                     <FaShare /> Share

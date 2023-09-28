@@ -43,10 +43,9 @@ function UserRooms() {
           </Col>
           <Col sm="3" className="mt-2 mb-1 justify-content-end d-flex">
             <Button
-              variant="info"
+              variant="warning"
               onClick={update_room_list}
               className="w-100"
-              style={{ backgroundColor: "#F3D748", border: "none" }}
             >
               <FontAwesomeIcon icon={faSync} /> Update
             </Button>

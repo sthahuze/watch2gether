@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react"; // Importing necessary React hooks and components.
-import { Col, Container, Row } from "react-bootstrap"; // Importing Bootstrap components.
+import { Button, Col, Container, Row } from "react-bootstrap"; // Importing Bootstrap components.
 import axios from "axios"; // Importing Axios for making HTTP requests.
 import styled from "styled-components"; // Importing styled-components for styling.
 
@@ -178,19 +178,13 @@ function Chat() {
         </Col>
 
         <Col md={3}>
-          <button
+          <Button
             className="btn w-100"
-            style={{
-              backgroundColor: isActive ? "#FFEA99" : "#F3D748",
-              transition: "background-color 0.1s ease",
-              border: "none",
-            }}
-            onMouseDown={() => setIsActive(true)}
-            onMouseUp={() => setIsActive(false)}
+            variant="warning"
             onClick={handleSendMessage}
           >
             Send
-          </button>
+          </Button>
         </Col>
       </Row>
     </Container>
