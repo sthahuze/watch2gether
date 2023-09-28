@@ -1,103 +1,113 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { Container, Nav, Navbar, Dropdown } from "react-bootstrap";
-import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { success_pop_up, error_pop_up } from "../api/pop_up";
+import { Link, useNavigate } from "react-router-dom"; // Importing routing components from React Router.
+import { useState } from "react"; // Importing state management hook from React.
+import { Container, Nav, Navbar, Dropdown } from "react-bootstrap"; // Importing Bootstrap components for navigation and dropdowns.
+import axios from "axios"; // Importing Axios for making HTTP requests.
+import { ToastContainer, toast } from "react-toastify"; // Importing toast notifications.
+import "react-toastify/dist/ReactToastify.css"; // Importing styles for toast notifications.
+import { success_pop_up, error_pop_up } from "../api/pop_up"; // Importing custom pop-up functions.
 
-const server = "https://gruppe9.toni-barth.com";
+const server = "https://gruppe9.toni-barth.com"; // Define the server URL.
 
 function useAuth() {
+  // Custom hook to check user authentication status and get the username.
   const username = localStorage.getItem("username");
   const isAuthenticated = !!localStorage.getItem("username");
   return { isAuthenticated, username };
 }
 
 function Navigation() {
-  const navigate = useNavigate();
-  const { isAuthenticated, username } = useAuth();
+  const navigate = useNavigate(); // Initialize the navigation function.
+  const { isAuthenticated, username } = useAuth(); // Get authentication status and username from the custom hook.
 
+  // Function to handle user logout.
   const handleLogout = async (e: any) => {
-    // Додайте `async` тут
     e.preventDefault();
-    //delete username from browser
+    // Delete the username and user ID from local storage.
     localStorage.removeItem("username");
-
     const userIdToDelete = localStorage.getItem("userID");
-    //delete userID from browser
     localStorage.removeItem("userID");
     localStorage.removeItem("roomid");
 
     try {
+      // Send a DELETE request to log out the user.
       const response = await axios.delete(`${server}/users/${userIdToDelete}`);
       if (response.status === 200) {
-        //pop up
+        // Show a success pop-up on successful logout.
         success_pop_up("User was successfully logged out");
       } else {
         console.error("Error when deleting user", response.status);
-        //pop up server error
+        // Show an error pop-up for server errors.
         error_pop_up("Error when deleting user::" + response.status);
       }
     } catch (error) {
-      //pop up another error
+      // Show an error pop-up for other errors.
       error_pop_up("Error when deleting user");
     }
     navigate("/");
   };
 
+  // Function to handle room creation.
   const handleCreateRoom = async (e: any) => {
     e.preventDefault();
     const username = localStorage.getItem("username");
     const userID = localStorage.getItem("userID");
-    console.log(username);
 
     try {
+      // Send a POST request to create a room.
       const response = await axios.post(`${server}/rooms/`);
       if (response.status === 201) {
         const roomid = response.data.name;
-        // localStorage.setItem("roomid", roomid);
 
         if (userID === "" || userID === null) {
+          // If the user is not logged in, store the room URL and show an error pop-up.
           localStorage.setItem("tmpURL", `/room/${roomid}`);
           error_pop_up("You have to log in first!");
           navigate("/login");
         } else {
           try {
+            // Send a PUT request to add the user to the room.
             const userResponse = await axios.put(
               `${server}/rooms/${roomid}/users`,
               { user: userID }
             );
             if (userResponse.status === 200) {
+              // Show a success pop-up for successful room creation and entry.
               success_pop_up("You successfully created and entered the Room");
               navigate(`/room/${roomid}`);
             } else {
+              // Show an error pop-up for other errors.
               error_pop_up("Error " + userResponse.status);
             }
           } catch (error) {
+            // Show an error pop-up for other errors.
             error_pop_up("Error ");
           }
         }
       } else {
-        //error pop up response.status
+        // Show an error pop-up for server errors.
         error_pop_up("Error " + response.status);
       }
     } catch (error) {
+      // Show an error pop-up for other errors.
       error_pop_up("Error ");
     }
   };
 
+  // Function to handle entering a room.
   const handleEnterTheRoom = () => {
-    const username = localStorage.getItem("username"); // Виклик функції CreateNewRoom
+    const username = localStorage.getItem("username");
     if (username === "" || username === null) {
+      // If the user is not logged in, store the room URL and show an error pop-up.
       localStorage.setItem("tmpURL", "/room_entrance");
       error_pop_up("You have to log in first!");
       navigate(`/login`);
     } else {
+      // If the user is logged in, navigate to the room entrance page.
       navigate("/room_entrance");
     }
   };
 
+  // Function to handle navigating to the user's rooms.
   const handleUserRooms = () => {
     const userid = localStorage.getItem("userID");
     navigate("/user_rooms");
@@ -121,6 +131,7 @@ function Navigation() {
             <Nav.Link onClick={handleCreateRoom}>Create room</Nav.Link>
             <Nav.Link onClick={handleEnterTheRoom}>Enter The room</Nav.Link>
             {isAuthenticated ? (
+              // If the user is authenticated, display a dropdown menu with user options.
               <Dropdown>
                 <Dropdown.Toggle as={Nav.Link} id="dropdown-basic">
                   {username}
@@ -136,6 +147,7 @@ function Navigation() {
                 </Dropdown.Menu>
               </Dropdown>
             ) : (
+              // If the user is not authenticated, display a "Log in" link.
               <>
                 <Nav.Link as={Link} to="/login">
                   Log in
@@ -145,7 +157,7 @@ function Navigation() {
           </Nav>
         </Navbar.Collapse>
       </Container>
-      <ToastContainer />
+      <ToastContainer /> {/* Render the toast notification container for pop-ups. */}
     </Navbar>
   );
 }

@@ -1,33 +1,34 @@
-import React, { useEffect, useState } from "react";
-import { Container, ListGroup, Button, Row, Col } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSync } from "@fortawesome/free-solid-svg-icons";
-import { get_user_rooms } from "../api/get_user_rooms";
-import LoadingSpinner from "../components/LoadingSpinner";
+import React, { useEffect, useState } from "react"; // Import React and necessary hooks
+import { Container, ListGroup, Button, Row, Col } from "react-bootstrap"; // Import Bootstrap components
+import { useNavigate } from "react-router-dom"; // Import useNavigate hook from React Router
+import { ToastContainer } from "react-toastify"; // Import ToastContainer for displaying notifications
+import "react-toastify/dist/ReactToastify.css"; // Import styles for Toastify
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // Import FontAwesomeIcon for icons
+import { faSync } from "@fortawesome/free-solid-svg-icons"; // Import FontAwesome icon faSync for refresh icon
+import { get_user_rooms } from "../api/get_user_rooms"; // Import a custom function to get user rooms
+import LoadingSpinner from "../components/LoadingSpinner"; // Import a loading spinner component
 
 function UserRooms() {
-  var isLoading = true;
-  const navigate = useNavigate();
-  const userid = localStorage.getItem("userID");
-  const [list, setList] = useState<string[] | undefined>([]);
+  var isLoading = true; // Initialize a loading state
+  const navigate = useNavigate(); // Create a navigation function using useNavigate
+  const userid = localStorage.getItem("userID"); // Get the user's ID from local storage
+  const [list, setList] = useState<string[] | undefined>([]); // State to store the list of user's rooms
 
+  // Function to update the list of user's rooms
   async function update_room_list() {
-    const user_rooms = await get_user_rooms(userid);
-    setList(user_rooms);
-    isLoading = false;
+    const user_rooms = await get_user_rooms(userid); // Fetch the user's rooms using the custom function
+    setList(user_rooms); // Update the list state with the user's rooms
+    isLoading = false; // Set loading state to false when data is loaded
   }
 
   useEffect(() => {
-    update_room_list();
-  }, []);
+    update_room_list(); // Call the update_room_list function when the component mounts to initially fetch user's rooms
+  }, []); // The empty dependency array ensures this effect runs only once on mount
 
+  // Function to handle item click, e.g., navigate to the selected room
   const handleItemClick = (roomid: string) => {
-    // Handle the item click here, for example, navigate to a new page or perform an action.
-    navigate(`/room/${roomid}`);
-    console.log("Item clicked:", roomid);
+    navigate(`/room/${roomid}`); // Navigate to the selected room using the React Router's navigate function
+    console.log("Item clicked:", roomid); // Log the clicked room ID for reference
   };
 
   return (
@@ -47,8 +48,7 @@ function UserRooms() {
               className="w-100"
               style={{ backgroundColor: "#F3D748", border: "none" }}
             >
-              <FontAwesomeIcon icon={faSync} />
-              Update
+              <FontAwesomeIcon icon={faSync} /> Update
             </Button>
           </Col>
         </Row>
@@ -64,7 +64,7 @@ function UserRooms() {
           ))}
         </ListGroup>
       </Container>
-      <ToastContainer />
+      <ToastContainer /> {/* Container for displaying toast notifications */}
     </div>
   );
 }

@@ -8,34 +8,36 @@ import { enter_room } from "../api/enter_room";
 import { user_in_room } from "../api/room_api";
 
 function RoomEntrance() {
-  const [roomid, setRoomID] = useState("");
+  const [roomid, setRoomID] = useState(""); // State to store the room ID
   const navigate = useNavigate();
 
+  // Function to handle changes in the room ID input field
   const handleRoomIDChange = (event: ChangeEvent<HTMLInputElement>) => {
     setRoomID(event.target.value);
   };
 
+  // Function to handle the form submission
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const userID = localStorage.getItem("userID");
+    const userID = localStorage.getItem("userID"); // Get the user's ID from local storage
 
     try {
-      const isUserInRoom = await user_in_room(roomid);
+      const isUserInRoom = await user_in_room(roomid); // Check if the user is already in the room
 
       if (isUserInRoom) {
-        navigate(`/room/${roomid}`);
+        navigate(`/room/${roomid}`); // If the user is in the room, navigate to the room
       } else {
-        const enteredRoom = await enter_room(roomid, userID);
+        const enteredRoom = await enter_room(roomid, userID); // Try to enter the room
 
         if (enteredRoom) {
-          navigate(`/room/${roomid}`);
+          navigate(`/room/${roomid}`); // If successful, navigate to the room
         } else {
-          navigate("/");
+          navigate("/"); // If not successful, navigate back to the home page
         }
       }
     } catch (error) {
       console.error(error);
-      navigate("/");
+      navigate("/"); // Handle any errors and navigate back to the home page
     }
   };
 
@@ -46,7 +48,7 @@ function RoomEntrance() {
       style={{
         backgroundPosition: "center",
         backgroundSize: "cover",
-        backgroundImage: `url(${background})`,
+        backgroundImage: `url(${background})`, // Styling for the background image
       }}
     >
       <div
@@ -65,15 +67,15 @@ function RoomEntrance() {
                 <Form.Control
                   type="text"
                   placeholder="RoomID"
-                  onChange={handleRoomIDChange}
+                  onChange={handleRoomIDChange} // Input field for entering the room ID
                 />
               </Form.Group>
 
-              <Button type="submit">Join a Room</Button>
+              <Button type="submit">Join a Room</Button> {/* Button to join the room */}
             </Form>
           </Modal.Body>
         </Modal.Dialog>
-        <ToastContainer />
+        <ToastContainer /> {/* Container for displaying toast notifications */}
       </div>
     </Container>
   );

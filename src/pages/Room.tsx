@@ -1,76 +1,77 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { CustomForm } from "../components/Form";
-import Youtube from "../components/Youtube";
-import Container from "react-bootstrap/Container";
-import { Button, Col, Row } from "react-bootstrap";
-import Chat from "../components/Chat";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import ClipboardJS from "clipboard";
-import { FaShare } from "react-icons/fa";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { useEffect, useState } from "react";  // Importing React hooks for managing state and side effects
+import { useNavigate } from "react-router-dom";  // Importing routing functionality
+import { CustomForm } from "../components/Form";  // Importing a custom form component
+import Youtube from "../components/Youtube";  // Importing a custom YouTube component
+import Container from "react-bootstrap/Container";  // Importing a Bootstrap container component
+import { Button, Col, Row } from "react-bootstrap";  // Importing Bootstrap UI components
+import Chat from "../components/Chat";  // Importing a custom chat component
+import { ToastContainer } from "react-toastify";  // Importing a notification component
+import "react-toastify/dist/ReactToastify.css";  // Importing styles for notifications
+import ClipboardJS from "clipboard";  // Importing ClipboardJS library for clipboard functionality
+import { FaShare } from "react-icons/fa";  // Importing a share icon from React Icons library
+import LoadingSpinner from "../components/LoadingSpinner";  // Importing a custom loading spinner component
 import {
   youtube_link,
   user_change,
   copyRoomLink,
   room_existance,
   user_in_room,
-} from "../api/room_api";
-import { error_pop_up, info_pop_up, success_pop_up } from "../api/pop_up";
-import { enter_room } from "../api/enter_room";
+} from "../api/room_api";  // Importing various functions from API files
+import { error_pop_up, info_pop_up, success_pop_up } from "../api/pop_up";  // Importing functions for displaying pop-up notifications
+import { enter_room } from "../api/enter_room";  // Importing a function for entering a room
 
 function Room() {
-  const navigate = useNavigate();
-  const [youtubeLink, setYoutubeLink] = useState<string>("");
+  const navigate = useNavigate();  // Initialize navigation function
+  const [youtubeLink, setYoutubeLink] = useState<string>("");  // State for storing YouTube video link
   var currentYoutubeLink: string | null = "";
-  const [roomid, setRoomId] = useState<string>(""); // Використовуємо стан для збереження roomid
-  const [isLoading, setIsLoading] = useState(true);
+  const [roomid, setRoomId] = useState<string>("");  // State for storing the room ID
+  const [isLoading, setIsLoading] = useState(true);  // State for loading indicator
   var room = "";
   var FetchState = false;
-  const userid = localStorage.getItem("userID");
+  const userid = localStorage.getItem("userID");  // Get the user ID from local storage
 
   interface User {
     id: number;
     name: string;
   }
 
-  var users: User[] = [];
+  var users: User[] = [];  // Initialize an array for storing user data
 
+  // Function to fetch room data and perform necessary checks
   const fetchData = async () => {
     setIsLoading(true);
     FetchState = true;
-    // Розбийте URL на частини за допомогою регулярного виразу
+    // Split the URL into parts using a regular expression
     const parts = window.location.href.split("/room/");
     if (parts.length === 2) {
       room = parts[1];
 
-      localStorage.setItem("roomid", room);
+      localStorage.setItem("roomid", room);  // Store the room ID in local storage
       console.log("roomid valid" + room);
     } else {
       localStorage.removeItem("roomid");
       setIsLoading(false);
       localStorage.removeItem("tmpURL");
-      navigate("/error");
+      navigate("/error");  // Redirect to an error page
     }
 
     localStorage.removeItem("tmpURL");
     try {
-      const roomE = await room_existance(room);
+      const roomE = await room_existance(room);  // Check if the room exists
 
       if (roomE === false) {
         localStorage.removeItem("roomid");
-        error_pop_up("Room does not exist");
+        error_pop_up("Room does not exist");  // Display an error notification
         setIsLoading(false);
-        navigate("/");
+        navigate("/");  // Redirect to the home page
       } else {
-        // Перевірка, чи користувач увійшов у систему
+        // Check if the user is logged in
         if (userid === "" || userid === null) {
-          // Якщо користувач не увійшов у систему, викликаємо помилку та зберігаємо URL
+          // If the user is not logged in, display an error and store the URL
           error_pop_up("You have to log in first!");
           localStorage.setItem("tmpURL", `/room/${room}`);
 
-          // Перенаправляємо користувача на сторінку логіну
+          // Redirect the user to the login page
           setIsLoading(false);
           navigate("/login");
         } else {
@@ -102,18 +103,20 @@ function Room() {
     setIsLoading(false);
   };
 
+  // useEffect to fetch data when the component mounts and manage clipboard functionality
   useEffect(() => {
     if (FetchState === false) {
       fetchData();
     }
 
-    const clipboard = new ClipboardJS(".copy-button");
+    const clipboard = new ClipboardJS(".copy-button");  // Initialize ClipboardJS for copying room link
 
     return () => {
-      clipboard.destroy();
+      clipboard.destroy();  // Cleanup ClipboardJS on component unmount
     };
   }, [FetchState]);
 
+  // useEffect to update the room ID when the URL changes
   useEffect(() => {
     if (roomid !== "") {
       const parts = window.location.href.split("/room/");
@@ -128,28 +131,29 @@ function Room() {
     }
   }, [navigate]);
 
+  // useEffect to fetch YouTube link and user changes periodically
   useEffect(() => {
     const fetchDataAndHandleAsync = async () => {
       try {
         await youtube_link(setYoutubeLink, youtubeLink);
         users = await user_change(users);
 
-        // Оновлюємо currentYoutubeLink лише якщо youtubeLink змінилося
+        // Update currentYouTubeLink only if youtubeLink has changed
         if (youtubeLink !== currentYoutubeLink) {
           currentYoutubeLink = youtubeLink;
-          info_pop_up("New Video!");
+          info_pop_up("New Video!");  // Display an info notification for a new video
         }
       } catch (error) {
-        // Обробляйте помилки, якщо потрібно
+        // Handle errors if needed
       }
     };
 
-    // Створюємо інтервал тільки після того, як компонент був змонтований
+    // Create an interval only after the component is mounted
     const intervalId = setInterval(() => {
       fetchDataAndHandleAsync();
     }, 2500);
 
-    // При виході з компоненту видаляємо інтервал
+    // Cleanup the interval on component unmount
     return () => {
       users = [];
       clearInterval(intervalId);
@@ -158,15 +162,16 @@ function Room() {
 
   const [isActive, setIsActive] = useState(false);
 
+  // Function to handle the "Share" button click
   const handleButtonClick = () => {
-    copyRoomLink(); // Копирование ссылки в буфер обмена
-    success_pop_up("Link is copied to clipboard"); // Отображение уведомления
+    copyRoomLink(); // Copy the room link to the clipboard
+    success_pop_up("Link is copied to clipboard"); // Display a success notification
   };
 
   return (
     <div>
       {isLoading ? (
-        <LoadingSpinner /> // Відобразиться, поки сторінка завантажується
+        <LoadingSpinner /> // Display a loading spinner while the page is loading
       ) : (
         <Container>
           <Row className="pt-1">
@@ -208,8 +213,8 @@ function Room() {
                 <Col>
                   <div className="Video">
                     <CustomForm setYoutubeLink={setYoutubeLink} />
-                    {youtubeLink === "Loading..." ? ( // Перевіряємо, чи URL відео готовий
-                      <p>Loading video...</p> // Відображаємо заставку поки відео завантажується
+                    {youtubeLink === "Loading..." ? ( // Check if the video URL is ready
+                      <p>Loading video...</p> // Display a loading message while the video is loading
                     ) : (
                       <Youtube youtubeLink={youtubeLink ?? ""} />
                     )}

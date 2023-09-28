@@ -1,9 +1,10 @@
-import { Col, Row } from "react-bootstrap";
-import Container from "react-bootstrap/Container";
+import { Col, Row } from "react-bootstrap"; // Importing Bootstrap components.
+import Container from "react-bootstrap/Container"; // Importing a Bootstrap container component.
 
 function Footer() {
   return (
     <footer>
+      {/* Container for the footer section */}
       <Container
         fluid
         className="pt-3 text-center"
@@ -11,10 +12,12 @@ function Footer() {
       >
         <Row className="justify-content-md-center ">
           <Col lg="10">
+            {/* Footer content */}
             <h5>
               Hochschule Anhalt. Modul Web- und Medienprogrammierung <br />
               Lehrbeauftragter: Toni Barth
             </h5>
+            {/* Row to display the names */}
             <Row className="justify-content-md-center">
               <Col md lg="2">
                 <p>Yuliia Porokhniava</p>

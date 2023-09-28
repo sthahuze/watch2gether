@@ -1,7 +1,7 @@
-import { success_pop_up, info_pop_up, error_pop_up } from "../api/pop_up";
-import axios, { all } from "axios";
+import { success_pop_up, info_pop_up, error_pop_up } from "../api/pop_up"; //bringing in functions (success_pop_up, info_pop_up, and error_pop_up) from a module located at "../api/pop_up."
+import axios, { all } from "axios"; // Importing Axios for making HTTP requests.
 
-const server = "https://gruppe9.toni-barth.com";
+const server = "https://gruppe9.toni-barth.com"; // Defining the base server URL.
 
 interface User {
   id: number;
@@ -14,6 +14,7 @@ interface ArrayComparisonResult {
   removed: any[];
 }
 
+// Function to compare two arrays and find added and removed elements.
 function compareArrays(array1: any[], array2: any[]): ArrayComparisonResult {
   const result: ArrayComparisonResult = {
     equal: true,
@@ -24,14 +25,14 @@ function compareArrays(array1: any[], array2: any[]): ArrayComparisonResult {
   if (array1.length !== array2.length) {
     result.equal = false;
   } else {
-    // Функція для сортування за id
+    // Function to sort the arrays by id
     const sortById = (a: { id: number }, b: { id: number }) => a.id - b.id;
 
-    // Клонування і сортування обох масивів
+    // Clone and sort both arrays
     const sortedArr1 = [...array1].sort(sortById);
     const sortedArr2 = [...array2].sort(sortById);
 
-    // Порівняння відсортованих масивів на рівність
+    // Compare sorted arrays for equality
     for (let i = 0; i < sortedArr1.length; i++) {
       if (sortedArr1[i].id !== sortedArr2[i].id) {
         result.equal = false;
@@ -40,7 +41,7 @@ function compareArrays(array1: any[], array2: any[]): ArrayComparisonResult {
     }
   }
 
-  // Пошук доданих та видалених елементів
+  // Find added and removed items
   for (const item of array2) {
     if (!array1.some((element) => element.id === item.id)) {
       result.added.push(item);
@@ -56,6 +57,7 @@ function compareArrays(array1: any[], array2: any[]): ArrayComparisonResult {
   return result;
 }
 
+// Function to update a YouTube link based on the room ID.
 export function youtube_link(setYoutubeLink: any, youtubeLink: any) {
   const roomid = localStorage.getItem("roomid");
 
@@ -63,25 +65,26 @@ export function youtube_link(setYoutubeLink: any, youtubeLink: any) {
     .get(`${server}/rooms/${roomid}/video`)
     .then((response) => {
       if (response.status === 200) {
-        // Оновлюємо URL відео, якщо отримали відповідь від сервера
+        // Update the video URL if a response is received from the server.
         if (response.data.url !== youtubeLink) {
           setYoutubeLink(response.data.url);
         }
       }
     })
     .catch((error) => {
-      console.error("Помилка при отриманні URL відео:", error.message);
-      setYoutubeLink("Error loading video"); // Встановлюємо помилкове повідомлення у разі помилки
+      console.error("Error while fetching video URL:", error.message);
+      setYoutubeLink("Error loading video"); // Set an error message in case of an error.
     });
 }
 
+// Async function to check for user changes in a room.
 export async function user_change(users: User[]): Promise<User[]> {
   try {
-    console.log("new user check");
+    console.log("Checking for new users");
     const roomid = localStorage.getItem("roomid");
     const response = await axios.get(`${server}/rooms/${roomid}/users`);
 
-    // handle success
+    // Handle success
     const all_users = response.data.users;
 
     if (users.length === 0) {
@@ -91,14 +94,14 @@ export async function user_change(users: User[]): Promise<User[]> {
 
       if (comparisonResult.equal !== true) {
         if (comparisonResult.added.length > 0) {
-          // Робимо щось, коли є додані елементи
+          // Do something when there are added items.
           comparisonResult.added.forEach((addedItem) => {
             console.log("User " + addedItem.name + " entered the room");
             success_pop_up("User " + addedItem.name + " entered the room");
           });
         }
         if (comparisonResult.removed.length > 0) {
-          // Робимо щось, коли є видалені елементи
+          // Do something when there are removed items.
           comparisonResult.removed.forEach((removedItem) => {
             console.log("User " + removedItem.name + " left the room");
             info_pop_up("User " + removedItem.name + " left the room");
@@ -106,16 +109,17 @@ export async function user_change(users: User[]): Promise<User[]> {
         }
         users = all_users;
         console.log(users);
-        return users; // Оновлюємо стан після отримання даних
+        return users; // Update the state after receiving data.
       }
     }
   } catch (error) {
-    // handle error
+    // Handle error
     console.log(error);
   }
   return users;
 }
 
+// Function to copy the room link to the clipboard.
 export const copyRoomLink = () => {
   const roomid = localStorage.getItem("roomid");
   const roomLink = `${window.location.origin}/watch2gether/room/${roomid}`;
@@ -127,25 +131,27 @@ export const copyRoomLink = () => {
   document.body.removeChild(dummyInput);
 };
 
+// Async function to check if a room with a desired name exists.
 export async function room_existance(desiredRoomName: any): Promise<boolean> {
   try {
     const response = await axios.get(`${server}/rooms`);
     const roomNames = response.data.rooms.map((room: any) => room.name);
 
     if (roomNames.includes(desiredRoomName)) {
-      console.log(`Кімната "${desiredRoomName}" існує у списку.`);
-      return true; // Змінено на повернення true
+      console.log(`Room "${desiredRoomName}" exists in the list.`);
+      return true; // Changed to return true
     } else {
-      console.log(`Кімнати "${desiredRoomName}" не існує у списку.`);
-      return false; // Змінено на повернення false
+      console.log(`Room "${desiredRoomName}" does not exist in the list.`);
+      return false; // Changed to return false
     }
   } catch (error) {
     error_pop_up("There is no such room");
-    console.error("Помилка при перевірці існування кімнати");
-    return false; // Змінено на повернення false
+    console.error("Error while checking room existence");
+    return false; // Changed to return false
   }
 }
 
+// Async function to check if a user is in a specific room.
 export async function user_in_room(roomid: string): Promise<boolean> {
   const desiredId = localStorage.getItem("userID");
 
@@ -159,14 +165,14 @@ export async function user_in_room(roomid: string): Promise<boolean> {
     );
 
     if (isIdInList) {
-      console.log(`Елемент з айді ${desiredId} знайдено в списку.`);
+      console.log(`Element with ID ${desiredId} found in the list.`);
       return true;
     } else {
-      console.log(`Елемент з айді ${desiredId} не знайдено в списку.`);
+      console.log(`Element with ID ${desiredId} not found in the list.`);
       return false;
     }
   } catch (error) {
-    // handle error
+    // Handle error
     console.log(error);
     return false;
   }

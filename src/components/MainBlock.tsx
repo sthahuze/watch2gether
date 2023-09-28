@@ -1,48 +1,58 @@
-import background from "./image/jvleergjp-rbvdis.jpg";
-import { Col, Button, Container, Row } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { success_pop_up, error_pop_up } from "../api/pop_up";
+import background from "./image/jvleergjp-rbvdis.jpg"; // Importing a background image.
+import { Col, Button, Container, Row } from "react-bootstrap"; // Importing Bootstrap components for layout and buttons.
+import { useNavigate } from "react-router-dom"; // Importing a hook for programmatic navigation.
+import axios from "axios"; // Importing Axios for making HTTP requests.
+import { ToastContainer } from "react-toastify"; // Importing a toast notification container.
+import "react-toastify/dist/ReactToastify.css"; // Importing styles for toast notifications.
+import { success_pop_up, error_pop_up } from "../api/pop_up"; // Importing custom pop-up functions.
 
-const server = "https://gruppe9.toni-barth.com";
+const server = "https://gruppe9.toni-barth.com"; // Define the server URL.
 
 function MainBlock() {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Initialize the navigation function.
+  
+  // Function to handle room creation.
   const handleCreateRoom = () => {
-    const username = localStorage.getItem("username");
-    const userID = localStorage.getItem("userID");
+    const username = localStorage.getItem("username"); // Get the username from local storage.
+    const userID = localStorage.getItem("userID"); // Get the user ID from local storage.
+
     if (username === "" || username === null) {
+      // If the user is not logged in, show an error pop-up and navigate to the login page.
       error_pop_up("You have to log in first!");
       navigate(`/login`);
     } else {
+      // If the user is logged in, send a POST request to create a room.
       axios
         .post(`${server}/rooms/`)
         .then((response) => {
           if (response.status === 201) {
-            const roomid = response.data.name;
-            localStorage.setItem("roomid", roomid);
+            const roomid = response.data.name; // Get the room ID from the response.
+            localStorage.setItem("roomid", roomid); // Store the room ID in local storage.
 
+            // Send a PUT request to add the user to the room.
             axios
               .put(`${server}/rooms/${roomid}/users`, { user: userID })
               .then((response) => {
                 if (response.status === 200) {
+                  // If the user was successfully added to the room, show a success pop-up and navigate to the room.
                   success_pop_up("You successfully entered the Room");
                   navigate(`/room/${roomid}`);
                 } else {
+                  // If there was an error adding the user to the room, show an error pop-up.
                   error_pop_up("Error " + response.status);
                 }
               })
               .catch((error) => {
+                // If there was an error with the PUT request, show an error pop-up.
                 error_pop_up("Error " + error.message);
               });
           } else {
-            //error pop up response.status
+            // If there was an error with the POST request to create a room, show an error pop-up.
             error_pop_up("Error " + response.status);
           }
         })
         .catch((error) => {
+          // If there was an error with the POST request, show an error pop-up.
           error_pop_up("Error " + error.message);
         });
     }
@@ -74,7 +84,7 @@ function MainBlock() {
           </div>
         </Col>
       </Row>
-      <ToastContainer />
+      <ToastContainer /> {/* Render the toast notification container for pop-ups. */}
     </Container>
   );
 }
