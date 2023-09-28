@@ -1,6 +1,6 @@
 import { useState } from "react"; // Importing the useState hook from React.
 import axios from "axios"; // Importing Axios for making HTTP requests.
-import { Col, Row } from "react-bootstrap"; // Importing Bootstrap components for layout.
+import { Button, Col, Row } from "react-bootstrap"; // Importing Bootstrap components for layout.
 
 const server = "https://gruppe9.toni-barth.com"; // Defining the base server URL.
 
@@ -52,13 +52,9 @@ export const CustomForm = ({ setYoutubeLink }: any) => {
         </Col>
         {/* Submit button */}
         <Col className="col mt-2">
-          <button
-            type="submit"
-            className="btn  btn-md w-100"
-            style={{ backgroundColor: "#F3D748" }}
-          >
+          <Button variant="warning" type="submit" className="btn  btn-md w-100">
             Submit
-          </button>
+          </Button>
         </Col>
       </Row>
     </form>
