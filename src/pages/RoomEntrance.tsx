@@ -66,12 +66,13 @@ function RoomEntrance() {
                 <Form.Label>Enter Room ID</Form.Label>
                 <Form.Control
                   type="text"
+                  required
                   placeholder="RoomID"
                   onChange={handleRoomIDChange} // Input field for entering the room ID
                 />
               </Form.Group>
-
-              <Button type="submit">Join a Room</Button> {/* Button to join the room */}
+              <Button type="submit">Join a Room</Button>{" "}
+              {/* Button to join the room */}
             </Form>
           </Modal.Body>
         </Modal.Dialog>
